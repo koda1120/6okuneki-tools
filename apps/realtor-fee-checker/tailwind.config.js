@@ -8,7 +8,17 @@ export default {
   theme: {
     extend: {
       colors: {
-        accent: '#2C4A7C',
+        'bg-base': '#F5F7FA',
+        'bg-card': '#FFFFFF',
+        'text-main': '#1E2A3B',
+        'text-sub': '#5A6978',
+        'accent': '#2C4A7C',
+        'line-green': '#06C755',
+        'border': '#D8DEE6',
+        'warning': '#E5A73B',
+      },
+      fontFamily: {
+        sans: ['Noto Sans JP', 'system-ui', 'sans-serif'],
       },
     },
   },
