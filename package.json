@@ -1,0 +1,14 @@
+{
+  "name": "6okuneki-tools",
+  "private": true,
+  "scripts": {
+    "dev:mobile": "pnpm --filter mobile-plan-optimizer dev",
+    "dev:credit": "pnpm --filter credit-checker dev",
+    "dev:realtor": "pnpm --filter realtor-fee-checker dev",
+    "build:all": "pnpm -r build",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
