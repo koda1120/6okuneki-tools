@@ -145,3 +145,43 @@ pnpm -r lint
 | 日付 | 内容 |
 |------|------|
 | 2025-01-16 | モノレポ構成として初版作成 |
+| 2025-01-16 | packages/shared 共通コンポーネント実装完了 |
+
+---
+
+## 次回やること
+
+- 各ツール（apps/配下）の個別実装
+  - 携帯プラン最適化（docs/10-mobile-plan-optimizer.md）
+  - クレカ明細チェッカー（docs/20-credit-checker.md）
+  - 不動産仲介手数料チェッカー（docs/30-realtor-fee-checker.md）
+
+---
+
+## 実装済み共通コンポーネント（packages/shared）
+
+### コンポーネント
+- `RegistrationForm` - メインの登録フォーム
+- `AgeSelect` - 年齢選択
+- `GenderSelect` - 性別選択
+- `EmailInput` - メールアドレス入力
+- `TermsCheckbox` - 同意チェックボックス
+- `TermsScrollBox` - 利用規約スクロールボックス
+- `Button` - 共通ボタン
+- `Card` - 共通カード
+
+### Hooks
+- `useRegistration` - 登録フロー管理
+- `useLocalStorage` - localStorage操作
+
+### Lib
+- `sendRegistration` - GAS送信処理
+- `validateEmail` - メールアドレスバリデーション
+- `sanitize` - HTMLサニタイズ
+
+### Constants
+- `DISCLAIMER_TEXT` - 免責事項
+- `TERMS_TEXT` - 利用規約全文
+- `GAS_URL` - GAS送信先URL
+- `AGE_OPTIONS` - 年齢選択肢
+- `GENDER_OPTIONS` - 性別選択肢
