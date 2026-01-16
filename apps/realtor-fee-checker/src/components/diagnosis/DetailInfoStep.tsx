@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Card } from '@6okuneki/shared';
-import { ChevronLeft, Search, SkipForward } from 'lucide-react';
+import { ChevronLeft, Search, SkipForward, Calendar } from 'lucide-react';
 import type { PropertyInfo, VacancyPeriod } from '../../types';
 import { BUILDING_AGE_OPTIONS, VACANCY_PERIOD_OPTIONS } from '../../constants/config';
 
@@ -10,12 +11,43 @@ interface DetailInfoStepProps {
   onPrevious: () => void;
 }
 
+type BuildingAgeInputMode = 'select' | 'year';
+
 export function DetailInfoStep({
   propertyInfo,
   onUpdate,
   onDiagnose,
   onPrevious,
 }: DetailInfoStepProps) {
+  const [ageInputMode, setAgeInputMode] = useState<BuildingAgeInputMode>('select');
+  const [builtYear, setBuiltYear] = useState<string>('');
+
+  const currentYear = new Date().getFullYear();
+
+  const handleBuiltYearChange = (value: string) => {
+    setBuiltYear(value);
+
+    if (value === '') {
+      onUpdate({ buildingAge: null, isNewConstruction: null });
+      return;
+    }
+
+    const year = parseInt(value, 10);
+    if (!isNaN(year) && year >= 1950 && year <= currentYear) {
+      const age = currentYear - year;
+      onUpdate({
+        buildingAge: age,
+        isNewConstruction: age === 0,
+      });
+    }
+  };
+
+  const calculatedAge = builtYear ? currentYear - parseInt(builtYear, 10) : null;
+  const isValidYear = builtYear !== '' &&
+    !isNaN(parseInt(builtYear, 10)) &&
+    parseInt(builtYear, 10) >= 1950 &&
+    parseInt(builtYear, 10) <= currentYear;
+
   return (
     <div className="space-y-4">
       <Card>
@@ -30,32 +62,101 @@ export function DetailInfoStep({
             <label className="block text-sm font-medium text-text-main mb-2">
               築年数
             </label>
-            <select
-              value={propertyInfo.buildingAge ?? ''}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '') {
+
+            {/* 入力方法切り替え */}
+            <div className="flex gap-2 mb-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setAgeInputMode('select');
+                  setBuiltYear('');
+                }}
+                className={`
+                  flex-1 h-10 rounded-lg text-sm font-medium border
+                  ${ageInputMode === 'select'
+                    ? 'bg-accent text-white border-accent'
+                    : 'bg-white text-text-sub border-border hover:border-accent'}
+                `}
+              >
+                年数で選ぶ
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setAgeInputMode('year');
                   onUpdate({ buildingAge: null, isNewConstruction: null });
-                } else {
-                  const numValue = parseInt(value, 10);
-                  onUpdate({
-                    buildingAge: numValue,
-                    isNewConstruction: numValue === 0,
-                  });
-                }
-              }}
-              className="w-full h-12 px-4 border border-border rounded-lg text-base
-                       focus:border-accent focus:outline-none bg-white appearance-none
-                       bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
-                       bg-no-repeat bg-[right_12px_center]"
-            >
-              <option value="">選択してください</option>
-              {BUILDING_AGE_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+                }}
+                className={`
+                  flex-1 h-10 rounded-lg text-sm font-medium border flex items-center justify-center gap-1
+                  ${ageInputMode === 'year'
+                    ? 'bg-accent text-white border-accent'
+                    : 'bg-white text-text-sub border-border hover:border-accent'}
+                `}
+              >
+                <Calendar className="w-4 h-4" />
+                建築年で入力
+              </button>
+            </div>
+
+            {/* 年数で選ぶ */}
+            {ageInputMode === 'select' && (
+              <select
+                value={propertyInfo.buildingAge ?? ''}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    onUpdate({ buildingAge: null, isNewConstruction: null });
+                  } else {
+                    const numValue = parseInt(value, 10);
+                    onUpdate({
+                      buildingAge: numValue,
+                      isNewConstruction: numValue === 0,
+                    });
+                  }
+                }}
+                className="w-full h-12 px-4 border border-border rounded-lg text-base
+                         focus:border-accent focus:outline-none bg-white appearance-none
+                         bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
+                         bg-no-repeat bg-[right_12px_center]"
+              >
+                <option value="">選択してください</option>
+                {BUILDING_AGE_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* 建築年で入力 */}
+            {ageInputMode === 'year' && (
+              <div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min="1950"
+                    max={currentYear}
+                    value={builtYear}
+                    onChange={(e) => handleBuiltYearChange(e.target.value)}
+                    placeholder={`例: ${currentYear - 10}`}
+                    className="flex-1 h-12 px-4 border border-border rounded-lg text-base
+                             focus:border-accent focus:outline-none"
+                  />
+                  <span className="text-text-sub">年築</span>
+                </div>
+                {isValidYear && calculatedAge !== null && (
+                  <p className="text-sm text-accent mt-2 font-medium">
+                    → 築{calculatedAge === 0 ? '新築' : `約${calculatedAge}年`}
+                  </p>
+                )}
+                {builtYear !== '' && !isValidYear && (
+                  <p className="text-sm text-warning mt-2">
+                    1950〜{currentYear}年の範囲で入力してください
+                  </p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* 空室期間 */}
