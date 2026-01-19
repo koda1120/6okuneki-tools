@@ -1,0 +1,9 @@
+# Cloudflare Pages 設定
+name = "credit-checker"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "dist"
+
+# Workers AI（無料枠: 10,000リクエスト/日）
+# ベストエフォート方式：超過時は分類不能として処理
+[ai]
+binding = "AI"

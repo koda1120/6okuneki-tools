@@ -1,21 +1,66 @@
-import { Smartphone } from 'lucide-react'
+import { useState, useEffect } from 'react';
+import { RegistrationForm, useLocalStorage } from '@6okuneki/shared';
+import { DiagnosisWizard } from './components/diagnosis/DiagnosisWizard';
+import { ResultPage } from './components/result/ResultPage';
+import type { DiagnosisInput } from './types/diagnosis';
+import type { DiagnosisResult } from './types/result';
+import { colors } from './constants/colors';
+
+const SITE_NAME = '携帯料金プラン最適化診断';
+const LOCAL_STORAGE_KEY = '6okuniki_mobile_registered';
+
+type AppStep = 'registration' | 'diagnosis' | 'result';
 
 function App() {
+  const [isRegistered] = useLocalStorage(LOCAL_STORAGE_KEY, false);
+  const [step, setStep] = useState<AppStep>('registration');
+  const [diagnosisResult, setDiagnosisResult] = useState<DiagnosisResult | null>(null);
+
+  // 登録済みの場合は診断画面へ
+  useEffect(() => {
+    if (isRegistered) {
+      setStep('diagnosis');
+    }
+  }, [isRegistered]);
+
+  const handleRegistrationComplete = () => {
+    setStep('diagnosis');
+    window.scrollTo(0, 0);
+  };
+
+  const handleDiagnosisComplete = (_input: DiagnosisInput, result: DiagnosisResult) => {
+    setDiagnosisResult(result);
+    setStep('result');
+    window.scrollTo(0, 0);
+  };
+
+  const handleRestart = () => {
+    setDiagnosisResult(null);
+    setStep('diagnosis');
+    window.scrollTo(0, 0);
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="text-center">
-        <div className="flex justify-center mb-4">
-          <Smartphone className="w-16 h-16 text-accent" />
-        </div>
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          携帯料金プラン最適化診断
-        </h1>
-        <p className="text-gray-600">
-          100社以上のプランから最適なものを診断します
-        </p>
-      </div>
+    <div className="min-h-screen bg-bg-base">
+      {step === 'registration' && (
+        <RegistrationForm
+          siteName={SITE_NAME}
+          title="あなたに最適なプランを診断"
+          description="100社以上のプランからあなたにぴったりのものを見つけます"
+          accentColor={colors.accent}
+          submitButtonText="診断を始める"
+          localStorageKey={LOCAL_STORAGE_KEY}
+          onComplete={handleRegistrationComplete}
+        />
+      )}
+      {step === 'diagnosis' && (
+        <DiagnosisWizard onComplete={handleDiagnosisComplete} />
+      )}
+      {step === 'result' && diagnosisResult && (
+        <ResultPage result={diagnosisResult} onRestart={handleRestart} />
+      )}
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

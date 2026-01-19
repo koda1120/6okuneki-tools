@@ -1,0 +1,52 @@
+{
+  "formats": [
+    {
+      "id": "rakuten",
+      "name": "楽天カード",
+      "columns": { "date": "利用日", "description": "利用店名・商品名", "amount": "利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "smbc",
+      "name": "三井住友カード",
+      "columns": { "date": "ご利用日", "description": "ご利用先など", "amount": "ご利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "jcb",
+      "name": "JCBカード",
+      "columns": { "date": "利用日", "description": "利用店名", "amount": "利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "amex",
+      "name": "アメリカン・エキスプレス",
+      "columns": { "date": "日付", "description": "説明", "amount": "金額" },
+      "encoding": "UTF-8"
+    },
+    {
+      "id": "mufg",
+      "name": "三菱UFJニコス",
+      "columns": { "date": "ご利用日", "description": "ご利用先", "amount": "ご利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "saison",
+      "name": "セゾンカード",
+      "columns": { "date": "ご利用日", "description": "ご利用先", "amount": "ご利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "aeon",
+      "name": "イオンカード",
+      "columns": { "date": "ご利用日", "description": "ご利用店名", "amount": "ご利用金額" },
+      "encoding": "Shift_JIS"
+    },
+    {
+      "id": "epos",
+      "name": "エポスカード",
+      "columns": { "date": "ご利用日", "description": "ご利用店名", "amount": "ご利用金額" },
+      "encoding": "Shift_JIS"
+    }
+  ]
+}

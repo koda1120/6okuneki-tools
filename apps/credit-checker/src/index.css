@@ -1,3 +1,115 @@
+/* Noto Sans JP フォント読み込み */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ベース設定 */
+body {
+  background-color: #FBF8F3;
+  color: #3D2C29;
+}
+
+/* 温かみのあるカードスタイル */
+@layer components {
+  .card-warm {
+    @apply bg-bg-card rounded-soft shadow-warm;
+    padding: 20px;
+  }
+
+  .card-warm-lg {
+    @apply bg-bg-card rounded-softer shadow-warm-lg;
+    padding: 24px;
+  }
+
+  /* セクション見出し */
+  .section-header {
+    @apply text-lg font-bold text-text-main mb-2;
+  }
+
+  .section-intro {
+    @apply text-sm text-text-sub mb-4;
+  }
+
+  /* カテゴリバッジ */
+  .category-badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium;
+  }
+
+  /* 金額表示 */
+  .amount-large {
+    @apply text-3xl font-bold text-text-main;
+  }
+
+  .amount-unit {
+    @apply text-base font-normal text-text-sub ml-1;
+  }
+}
+
+/* スクロールバーのカスタマイズ */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #E8DFD3;
+  border-radius: 3px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #E07A5F;
+  border-radius: 3px;
+}
+
+/* 利用規約スクロールボックス用 */
+.terms-scroll-box {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #E8DFD3;
+  padding: 15px;
+  background-color: #FFFCF5;
+  font-size: 12px;
+  line-height: 1.6;
+  border-radius: 12px;
+}
+
+/* iOS Safari zoom防止 */
+input[type="text"],
+input[type="email"],
+select,
+textarea {
+  font-size: 16px;
+}
+
+/* アニメーション */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* 遅延アニメーション用 */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+
+/* 割合バー */
+.percentage-bar {
+  @apply h-2 rounded-full overflow-hidden;
+  background-color: #E8DFD3;
+}
+
+.percentage-bar-fill {
+  @apply h-full rounded-full transition-all duration-500;
+}

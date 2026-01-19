@@ -1,0 +1,108 @@
+{
+  "categories": [
+    {
+      "id": "food",
+      "label": "食費",
+      "labelEn": "Food",
+      "color": "#C67B4E",
+      "description": "スーパー・飲食店など食事に関する支出",
+      "examples": ["イオン", "イトーヨーカドー", "マクドナルド", "吉野家"]
+    },
+    {
+      "id": "convenience",
+      "label": "コンビニ",
+      "labelEn": "Convenience Store",
+      "color": "#D4A574",
+      "description": "コンビニエンスストアでの支出",
+      "examples": ["セブン-イレブン", "ファミリーマート", "ローソン"]
+    },
+    {
+      "id": "cafe",
+      "label": "カフェ",
+      "labelEn": "Cafe",
+      "color": "#B8956B",
+      "description": "カフェ・喫茶店での支出",
+      "examples": ["スターバックス", "ドトール", "タリーズ"]
+    },
+    {
+      "id": "daily",
+      "label": "日用品",
+      "labelEn": "Daily Necessities",
+      "color": "#8B7B6B",
+      "description": "ドラッグストア・日用品店での支出",
+      "examples": ["マツモトキヨシ", "ウエルシア", "ドン・キホーテ"]
+    },
+    {
+      "id": "transport",
+      "label": "交通費",
+      "labelEn": "Transportation",
+      "color": "#6B8CAE",
+      "description": "電車・バス・タクシーなど交通に関する支出",
+      "examples": ["JR", "Suica", "PASMO", "タクシー"]
+    },
+    {
+      "id": "telecom",
+      "label": "通信費",
+      "labelEn": "Telecom",
+      "color": "#5A8F6A",
+      "description": "携帯電話・インターネット回線などの支出",
+      "examples": ["NTTドコモ", "au", "ソフトバンク", "楽天モバイル"]
+    },
+    {
+      "id": "subscription",
+      "label": "サブスク",
+      "labelEn": "Subscription",
+      "color": "#7A9E7E",
+      "description": "定額制サービスの支出",
+      "examples": ["Netflix", "Spotify", "Amazon Prime", "Apple Music"]
+    },
+    {
+      "id": "shopping",
+      "label": "ショッピング",
+      "labelEn": "Shopping",
+      "color": "#A4C4B5",
+      "description": "衣料品・雑貨などのショッピング",
+      "examples": ["ユニクロ", "GU", "ZARA", "無印良品"]
+    },
+    {
+      "id": "entertainment",
+      "label": "娯楽",
+      "labelEn": "Entertainment",
+      "color": "#C4A77D",
+      "description": "趣味・娯楽に関する支出",
+      "examples": ["映画館", "カラオケ", "ゲーム", "書籍"]
+    },
+    {
+      "id": "health",
+      "label": "医療・健康",
+      "labelEn": "Health",
+      "color": "#6D8B74",
+      "description": "病院・薬局・フィットネスなどの支出",
+      "examples": ["病院", "薬局", "ジム", "整体"]
+    },
+    {
+      "id": "insurance",
+      "label": "保険",
+      "labelEn": "Insurance",
+      "color": "#9E8B7D",
+      "description": "保険料の支出",
+      "examples": ["生命保険", "医療保険", "自動車保険"]
+    },
+    {
+      "id": "utility",
+      "label": "公共料金",
+      "labelEn": "Utility",
+      "color": "#C9B8A8",
+      "description": "電気・ガス・水道などの支出",
+      "examples": ["東京電力", "東京ガス", "水道局"]
+    },
+    {
+      "id": "other",
+      "label": "その他",
+      "labelEn": "Other",
+      "color": "#8C8C8C",
+      "description": "上記に分類されないその他の支出",
+      "examples": []
+    }
+  ]
+}

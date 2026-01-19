@@ -1,0 +1,27 @@
+● パターン1: 新規ツール作成（完成版）
+
+  プロジェクトフォルダ: C:\Users\music006\業務\プロジェクト\6億ニキツール
+
+  新規ツールを作成して。
+
+  ## 要件定義書
+  docs/XX-XXXXX.md
+  （↑ここだけ実際のファイル名に変えて）
+
+  ## 作業手順
+  1. CLAUDE.md を読んでプロジェクト構成を把握
+  2. 上記の要件定義書を読んで、ツール名・フォルダ名・仕様を把握
+  3. apps/ 内に適切な名前でフォルダを新規作成
+  4. 必要な設定ファイル一式を作成（package.json, vite.config.ts, tailwind.config.js, tsconfig.json 等）
+  5. @6okuneki/shared を使って実装
+  6. pnpm install 実行
+  7. 動作確認（pnpm dev:XXX）
+  8. CLAUDE.md の更新履歴・次回やることを更新
+
+  ## 注意
+  - packages/shared/ は参照のみ（変更が必要なら作業を止めて報告）
+  - 他の apps/ フォルダは触らない
+  - ルートの package.json にdev:XXX スクリプトを追加してOK
+
+  ---
+  使い方: docs/XX-XXXXX.md の部分だけ実際のファイル名に変えて貼り付ける。

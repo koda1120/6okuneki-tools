@@ -146,15 +146,186 @@ pnpm -r lint
 |------|------|
 | 2025-01-16 | モノレポ構成として初版作成 |
 | 2025-01-16 | packages/shared 共通コンポーネント実装完了 |
+| 2025-01-17 | 携帯プラン最適化ツール実装完了・Netlifyデプロイ |
+| 2025-01-17 | クレカ明細チェッカー実装完了・Cloudflare Pagesデプロイ |
+| 2026-01-16 | 不動産仲介手数料チェッカー実装完了・Vercelデプロイ |
+| 2026-01-19 | 携帯プラン最適化ツール デザイン刷新（テック・比較・スマート） |
+| 2026-01-19 | 携帯プラン最適化ツール プランデータ拡充完了（20→157プラン、50キャリア） |
 
 ---
 
 ## 次回やること
 
-- 各ツール（apps/配下）の個別実装
-  - 携帯プラン最適化（docs/10-mobile-plan-optimizer.md）
-  - クレカ明細チェッカー（docs/20-credit-checker.md）
-  - 不動産仲介手数料チェッカー（docs/30-realtor-fee-checker.md）
+### 不動産仲介手数料チェッカー
+- [ ] LINE公式アカウントURLの差し替え（`src/constants/config.ts` の `lineOfficialUrl`）
+- [ ] 本番サイトでの動作確認（フォームが正しく表示・動作するか）
+
+### クレカ明細チェッカー
+- [ ] テストCSVで動作確認（https://credit-checker.pages.dev）
+- [ ] AI分類が正常動作するか確認
+- [ ] 各カード会社フォーマットでのパース確認
+
+### 携帯プラン最適化
+- [x] プランデータ拡充完了（157プラン・50キャリア）
+  - 大手MNO、サブブランド、MVNO、地域系を網羅
+  - 「国内50社以上のプランから最適を診断」と銘打てる状態
+
+---
+
+## 不動産仲介手数料チェッカー（2026-01-16 実装完了）
+
+### デプロイ情報
+
+| 項目 | 値 |
+|------|-----|
+| ホスティング | Vercel |
+| Project Name | `6niki-fudosan-chukai-checker` |
+| URL | https://6niki-fudosan-chukai-checker.vercel.app/ |
+| Root Directory | `apps/realtor-fee-checker` |
+| Build Command | `cd ../.. && pnpm install && pnpm --filter realtor-fee-checker build` |
+
+### 設計方針
+
+1. **AD可能性スコアリング** (`src/lib/adCalculator.ts`)
+   - 築年数、空室期間、エリア、物件種別、入居時期などから推測
+   - 0-100のスコアで5段階評価（very_high, high, medium, low, very_low）
+
+2. **築年数入力** - 2つの入力方法を用意
+   - 「年数で選ぶ」：従来のドロップダウン選択
+   - 「建築年で入力」：西暦入力 → 自動計算（例: 2016年 → 築約10年）
+
+3. **LINE誘導** - 結果画面で交渉の難しさを説明し、LINE相談へ誘導
+
+### 解決した問題
+
+| 問題 | 原因 | 解決方法 |
+|------|------|---------|
+| Vercelでビルド失敗・フォームが表示されない | デフォルトのBuild Commandでは`@6okuneki/shared`が読み込めない | Build Commandを`cd ../.. && pnpm install && pnpm --filter realtor-fee-checker build`に変更 |
+
+### 重要な学び
+
+**モノレポでのVercelデプロイ**: sharedパッケージを「変更」するわけではなく「参照」するだけなので、Build Commandでルートから実行しても各ツール個別のディレクトリのみ触る制約には違反しない
+
+---
+
+## クレカ明細チェッカー（2025-01-17 実装完了）
+
+### デプロイ情報
+
+- **URL**: https://6niki-credit-checker.pages.dev
+- **ホスティング**: Cloudflare Pages
+- **AI分類**: Cloudflare Workers AI（@cf/meta/llama-3-8b-instruct）
+
+### 重要な設計方針
+
+1. **AI分類はベストエフォート方式**
+   - ユーザーの選択式ではなく、**自動的に実行**する
+   - 無料枠超過・エラー時は**サイレントに「分類不能」扱い**（エラー表示なし）
+   - ユーザーに課金が発生することは100%ない
+
+2. **分類の優先順位**
+   ```
+   加盟店完全一致 → 部分一致 → キーワードマッチ → AI分類 → 分類不能
+   ```
+
+3. **Cloudflare無料枠の安全性**
+   - Workers AI無料枠: 10,000リクエスト/日
+   - 超過時は429エラーが返る → catchして空配列を返す
+   - 有料プランに加入しない限り課金は発生しない
+
+### 解決した問題
+
+| 問題 | 解決方法 |
+|------|----------|
+| csvParser.tsの型エラー | `results.data as Record<string, string>[]` でキャスト |
+| 未使用import/変数によるビルドエラー | 該当コードを削除 |
+| CSS @import順序の警告 | Google Fontsのimportを@tailwindより前に移動 |
+| AI分類をユーザー選択式で実装してしまった | 要件定義書を再確認し、自動実行（ベストエフォート）に修正 |
+| wrangler loginタイムアウト | 再試行で成功 |
+| デプロイ時プロジェクト未作成エラー | `wrangler pages project create`で事前作成 |
+
+### ファイル構成
+
+```
+apps/credit-checker/
+├── functions/api/classify.ts    # Workers AI分類API
+├── src/
+│   ├── types/                   # 型定義
+│   ├── data/                    # マスタデータ（JSON）
+│   │   ├── csvFormats.json      # 8社のCSVフォーマット
+│   │   ├── categories.json      # 13カテゴリ
+│   │   ├── merchants.json       # 約200加盟店
+│   │   └── keywords.json        # 約100キーワード
+│   ├── lib/                     # ロジック
+│   ├── hooks/                   # カスタムフック
+│   └── components/              # UIコンポーネント
+├── test-data/                   # テストCSV
+│   └── 楽天カード_テスト明細.csv
+└── wrangler.toml                # Cloudflare設定
+```
+
+---
+
+## 携帯プラン最適化ツール（2025-01-17 実装完了）
+
+### デプロイ情報
+
+- **URL**: https://6niki-keitai-shindan.netlify.app
+- **Netlify Project**: `6niki-keitai-shindan`
+- **ビルドコマンド**: `pnpm --filter mobile-plan-optimizer build`
+- **公開ディレクトリ**: `apps/mobile-plan-optimizer/dist`
+
+### 設計方針
+
+1. **スコアリングロジック** (`src/lib/scorer.ts`)
+   - 6つの評価軸: 料金・品質・データ量・通話・割引・サポート
+   - ユーザーの重視ポイントに応じて重みを2倍に調整
+   - 正規化して合計100点満点
+
+2. **割引適用ロジック**
+   - カード割引: ユーザーのカードとプランの`targetCards`をキーワードマッチング
+   - 光回線割引: `homeInternet`と`targetServices`をマッチング
+   - **重要**: 空の`targetCards`配列は「割引なし」として扱う（全カード対象ではない）
+
+3. **家族パターン比較** (`src/lib/calculator.ts`)
+   - パターン1: 各自最適プラン（別キャリア可）
+   - パターン2: 同一キャリア統一（家族割適用）
+
+### 解決した問題
+
+| 問題 | 原因 | 解決方法 |
+|------|------|---------|
+| ahamoが3,883円と表示（本来は4,950円） | `targetCards`が空配列のとき全カード対象として割引適用していた | `matchesTargetCard()`関数で空配列は割引なしと判定するよう修正 |
+| WSLからGitHub pushできない | Windows側のcredential helperがWSLから呼び出せない | GitHub CLI (gh) をWindows側にインストールし、`~/.local/bin/git-credential-gh`ラッパースクリプトを作成 |
+| Netlifyビルド失敗 | ビルドコマンドが`build`だけだった | `pnpm --filter mobile-plan-optimizer build`に修正 |
+
+### 現在のプランデータ（157プラン・50キャリア）
+
+**大手MNO**: docomo(5), au(2), softbank(4)
+**サブブランド**: Y!mobile(4), UQ mobile(4), povo(4)
+**オンライン専用**: LINEMO(2), ahamo(2)
+**楽天**: 楽天モバイル(1)
+**主要MVNO**: 日本通信(4), イオンモバイル(9), HISモバイル(5), LIBMO(4), LinksMate(4), J:COM(4), y.u mobile(3), QTモバイル(6), IIJmio(7), mineo(4), nuroモバイル(3), BIGLOBE(3), excite(3), DTI(2), b-mobile(3), トーンモバイル(2), OCN(1)
+**追加MVNO**: NifMo(3), ロケットモバイル(3), ヤマダニューモバイル(3), hi-ho(2), ASAHIネット(2), ワイヤレスゲート(2), BIC SIM(3), スマモバ(2), Fiimo(2), X-mobile(3), インターリンク(2), TikimoSIM(2), ペンギンモバイル(2), Wonderlink(2), G-Call(2), So-net(2)
+**地域系**: ピカラモバイル(2), eoモバイル(3), TOKAIモバイル(2), BBIQ(2), コミュファモバイル(2), RepairSIM(2), @モバイルくん(2)
+
+### デザイン刷新（2026-01-19）
+
+**コンセプト**: 「テック・比較・スマート」
+
+| 変更点 | Before | After |
+|--------|--------|-------|
+| アクセント色 | 赤 `#D94343` | シアン `#0891B2` |
+| 背景色 | オフホワイト `#FAF9F7` | 純白に近い `#FAFAFA` |
+| テキスト色 | `#333333` | ほぼ黒 `#111827` |
+| 角丸 | 12px (rounded-xl) | 8px (rounded-lg) |
+| カードシャドウ | あり | なし（ボーダーのみ） |
+| アイコン背景 | 丸 (rounded-full) | 角丸 (rounded-lg) |
+
+**特徴**:
+- 金額を大きく目立たせる（price-large クラス）
+- 節約額は緑でハイライト
+- 比較テーブル用の横スクロールUI（compare-scroll クラス）
 
 ---
 

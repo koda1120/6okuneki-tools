@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Just Fucking Cancel — Getting Started</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Find forgotten subscriptions in your bank statements and cancel them with AI. No coding required. Free and open source.">
+  <meta name="author" content="Rohun Vora">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://cancel-no-code.vercel.app/getting-started.html">
+  <meta property="og:title" content="Just Fucking Cancel — Find and cancel forgotten subscriptions">
+  <meta property="og:description" content="Upload your bank statement CSV. Claude finds recurring charges and cancels them for you. No coding required.">
+  <meta property="og:image" content="https://cancel-no-code.vercel.app/images/og-image.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://cancel-no-code.vercel.app/getting-started.html">
+  <meta name="twitter:title" content="Just Fucking Cancel — Find and cancel forgotten subscriptions">
+  <meta name="twitter:description" content="Upload your bank statement CSV. Claude finds recurring charges and cancels them for you. No coding required.">
+  <meta name="twitter:image" content="https://cancel-no-code.vercel.app/images/og-image.png">
+  <style>
+    :root {
+      --bg: #fff;
+      --text: #1a1a1a;
+      --muted: #666;
+      --border: #e5e5e5;
+      --accent: #1976d2;
+      --success: #166534;
+      --success-bg: #dcfce7;
+      --warning: #854d0e;
+      --warning-bg: #fef3c7;
+      --code-bg: #1e1e1e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0a0a0a;
+        --text: #e5e5e5;
+        --muted: #999;
+        --border: #333;
+        --accent: #64b5f6;
+        --success: #22c55e;
+        --success-bg: #052e16;
+        --warning: #f97316;
+        --warning-bg: #431407;
+        --code-bg: #1a1a1a;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 20px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    h1 { font-size: 1.8rem; margin: 0 0 0.25rem; }
+    h2 {
+      font-size: 1.3rem;
+      margin: 0;
+      padding: 0;
+      border: none;
+      color: var(--text);
+    }
+    h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.5rem;
+      color: var(--text);
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      padding: 1.5rem 0 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .tagline {
+      color: var(--muted);
+      margin: 0.25rem 0 1rem;
+      font-size: 0.95rem;
+    }
+    .github-button-wrap {
+      margin-bottom: 0.75rem;
+      min-height: 28px;
+    }
+    .guide-note {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0;
+      font-style: italic;
+    }
+    .header-connector {
+      width: 2px;
+      height: 40px;
+      border-left: 2px dashed var(--accent);
+      margin: 1.5rem auto 0;
+      position: relative;
+    }
+    .header-connector::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: -6px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 8px solid var(--accent);
+    }
+    .badges {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .badge {
+      padding: 4px 12px;
+      background: var(--border);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--text);
+    }
+
+
+    /* Progress */
+    .progress {
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      padding: 0.75rem 0;
+      border-bottom: 2px dashed var(--accent);
+      margin: 0 -20px 1.5rem;
+      padding-left: 20px;
+      padding-right: 20px;
+      z-index: 100;
+    }
+    .progress-steps {
+      display: flex;
+      justify-content: space-between;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    .progress-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      position: relative;
+      cursor: pointer;
+    }
+    .progress-step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      top: 12px;
+      left: 50%;
+      width: 100%;
+      height: 2px;
+      background: var(--border);
+      pointer-events: none;
+    }
+    .progress-step.completed:not(:last-child)::after {
+      background: var(--accent);
+    }
+    .progress-dot {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--border);
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      position: relative;
+      z-index: 1;
+    }
+    .progress-step:hover .progress-dot {
+      background: var(--accent);
+      color: white;
+    }
+    .progress-step.active .progress-dot {
+      background: var(--accent);
+      color: white;
+    }
+    .progress-step.completed .progress-dot {
+      background: var(--bg);
+      border: 2px dashed var(--accent);
+      color: var(--accent);
+    }
+    .progress-label {
+      font-size: 9px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .progress-step.active .progress-label { color: var(--accent); font-weight: 600; }
+    .progress-step.completed .progress-label { color: var(--accent); }
+
+    /* Steps */
+    .step {
+      position: relative;
+      margin: 0 0 2.5rem;
+      padding-left: 48px;
+      scroll-margin-top: 80px;
+    }
+    .step::before {
+      content: '';
+      position: absolute;
+      left: 17px;
+      top: 40px;
+      bottom: -2.5rem;
+      width: 2px;
+      background: var(--border);
+    }
+    .step:last-of-type::before { display: none; }
+    .step.completed::before { background: var(--success); }
+    .step-num {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .step-header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .step-time {
+      font-size: 0.8rem;
+      color: var(--muted);
+      background: var(--border);
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* Code */
+    pre {
+      background: var(--code-bg);
+      color: #d4d4d4;
+      padding: 0.75rem 1rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      font-size: 0.85rem;
+      margin: 0.5rem 0;
+      position: relative;
+    }
+    code {
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      background: var(--border);
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+      font-size: 0.85em;
+    }
+    pre code { background: none; padding: 0; }
+    pre .copy-btn {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      padding: 3px 10px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 3px;
+      color: #999;
+      cursor: pointer;
+    }
+    pre .copy-btn:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    pre.copied .copy-btn { background: var(--success); color: white; border-color: var(--success); }
+
+    /* Callouts */
+    .tip {
+      background: var(--success-bg);
+      border-left: 3px solid var(--success);
+      padding: 0.6rem 0.75rem;
+      margin: 0.75rem 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+    }
+    .tip strong { color: var(--success); }
+    .warning {
+      background: var(--warning-bg);
+      border-left: 3px solid var(--warning);
+      padding: 0.6rem 0.75rem;
+      margin: 0.75rem 0;
+      border-radius: 0 4px 4px 0;
+      font-size: 0.9rem;
+    }
+    .warning strong { color: var(--warning); }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0;
+      margin: 0.75rem 0 0;
+    }
+    .tab {
+      padding: 0.4rem 0.75rem;
+      background: var(--border);
+      border: none;
+      cursor: pointer;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    .tab:first-child { border-radius: 4px 0 0 0; }
+    .tab:last-child { border-radius: 0 4px 0 0; }
+    .tab.active { background: var(--accent); color: white; }
+    .tab-content {
+      display: none;
+      background: var(--border);
+      padding: 1rem;
+      border-radius: 0 4px 4px 4px;
+      font-size: 0.9rem;
+    }
+    .tab-content.active { display: block; }
+    .tab-content ol { margin: 0; padding-left: 1.25rem; }
+    .tab-content li { margin: 0.5rem 0; }
+
+    /* Lists */
+    .checklist {
+      list-style: none;
+      padding: 0;
+      margin: 0.5rem 0;
+    }
+    .checklist li {
+      padding: 0.35rem 0 0.35rem 1.5rem;
+      position: relative;
+    }
+    .checklist li::before {
+      content: '○';
+      position: absolute;
+      left: 0;
+      color: var(--muted);
+    }
+    ol, ul { margin: 0.5rem 0; padding-left: 1.25rem; }
+    li { margin: 0.4rem 0; }
+
+    /* Expandable */
+    details {
+      margin: 0.5rem 0;
+      background: var(--border);
+      border-radius: 4px;
+    }
+    summary {
+      cursor: pointer;
+      padding: 0.6rem 0.75rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+    details[open] summary { border-bottom: 1px solid var(--bg); }
+    details > div { padding: 0.75rem; font-size: 0.9rem; }
+
+    /* Terminal Mock */
+    .terminal {
+      background: #252525;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.75rem 0;
+      font-family: 'SF Mono', Monaco, Consolas, monospace;
+      font-size: 12px;
+    }
+    .terminal-bar {
+      background: #3c3c3c;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .terminal-btn { width: 10px; height: 10px; border-radius: 50%; }
+    .terminal-btn.close { background: #ff5f56; }
+    .terminal-btn.min { background: #ffbd2e; }
+    .terminal-btn.max { background: #27ca40; }
+    .terminal-title { flex: 1; text-align: center; color: #999; font-size: 11px; font-family: system-ui; }
+    .terminal-body { padding: 12px; color: #d4d4d4; line-height: 1.5; }
+    .t-prompt { color: #6cb6ff; }
+    .t-path { color: #7ee787; }
+    .t-box { background: #1e1e1e; border-radius: 6px; padding: 10px 12px; margin: 10px 0; }
+    .t-header { color: #f0883e; font-weight: bold; }
+    .t-dim { color: #8b949e; }
+    .t-blue { color: #6cb6ff; }
+    .t-caret { color: #f0883e; }
+    .t-server { background: #1e1e1e; border-radius: 4px; padding: 10px; margin: 6px 0; display: flex; justify-content: space-between; align-items: center; }
+    .t-enabled { background: #238636; color: #fff; padding: 3px 8px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+    .t-green { color: #7ee787; font-size: 11px; }
+
+    /* Browser Mock */
+    .browser {
+      background: #f5f5f5;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.75rem 0;
+    }
+    .browser-bar {
+      background: #e0e0e0;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .browser-body {
+      padding: 16px;
+      background: #fff;
+      color: #333;
+      font-family: system-ui;
+      font-size: 13px;
+    }
+    .browser-body h4 { font-size: 18px; margin: 0 0 4px; font-weight: 600; }
+    .browser-body .sub { color: #666; margin-bottom: 12px; font-size: 12px; }
+    .browser-card { background: #f5f5f5; border-radius: 6px; padding: 12px; margin-bottom: 10px; }
+    .browser-card strong { font-size: 13px; }
+    .browser-card .sub { margin: 0; }
+    .browser-row { padding: 10px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; }
+    .browser-badge { background: #fff8e6; border-radius: 12px; padding: 6px 12px; display: inline-block; font-size: 11px; margin-top: 12px; }
+    .browser-badge span { color: #f5a623; }
+
+    /* Sections */
+    section { margin-top: 2.5rem; }
+    section > h2 { border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+
+    /* Footer */
+    footer {
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--accent); }
+
+    /* Links */
+    a { color: var(--accent); }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      body { padding: 12px; }
+      .step { padding-left: 40px; scroll-margin-top: 60px; }
+      .step-num { width: 30px; height: 30px; font-size: 0.9rem; }
+      .step::before { left: 14px; }
+      h1 { font-size: 1.5rem; }
+      h2 { font-size: 1.15rem; }
+      .progress-label { display: none; }
+      .progress-dot { width: 20px; height: 20px; font-size: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="progress">
+  <div class="progress-steps">
+    <div class="progress-step active" data-step="1" onclick="scrollToStep(1)">
+      <div class="progress-dot">1</div>
+      <div class="progress-label">Export</div>
+    </div>
+    <div class="progress-step" data-step="2" onclick="scrollToStep(2)">
+      <div class="progress-dot">2</div>
+      <div class="progress-label">Download</div>
+    </div>
+    <div class="progress-step" data-step="3" onclick="scrollToStep(3)">
+      <div class="progress-dot">3</div>
+      <div class="progress-label">Install</div>
+    </div>
+    <div class="progress-step" data-step="4" onclick="scrollToStep(4)">
+      <div class="progress-dot">4</div>
+      <div class="progress-label">Audit</div>
+    </div>
+    <div class="progress-step" data-step="5" onclick="scrollToStep(5)">
+      <div class="progress-dot">5</div>
+      <div class="progress-label">Cancel</div>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <h1>Just Fucking Cancel</h1>
+  <p class="tagline">Find all your subscriptions. Claude will cancel them for you.</p>
+  <div class="github-button-wrap">
+    <a class="github-button" href="https://github.com/rohunvora/just-fucking-cancel" data-color-scheme="no-preference: light; light: light; dark: dark;" data-icon="octicon-star" data-size="large" data-show-count="true" aria-label="Star rohunvora/just-fucking-cancel on GitHub">Star</a>
+  </div>
+  <p class="guide-note">This guide is for people with zero coding experience.</p>
+  <div class="header-connector"></div>
+</header>
+
+<!-- STEP 1: Export Transactions -->
+<article class="step" id="step-1" data-step="1">
+  <div class="step-num">1</div>
+  <div class="step-header">
+    <h2>Export Your Transactions</h2>
+    <span class="step-time">3-5 min</span>
+  </div>
+
+  <p>Get a CSV file from your bank. Most banks have this in account settings.</p>
+
+  <details>
+    <summary>Apple Card</summary>
+    <div>
+      <ol>
+        <li>Open <strong>Wallet</strong> on your iPhone</li>
+        <li>Tap <strong>Apple Card</strong></li>
+        <li>Scroll down → tap <strong>Card Balance</strong></li>
+        <li>Tap <strong>...</strong> → <strong>Export Transactions</strong></li>
+        <li>Choose <strong>Last 12 Months</strong> and <strong>CSV</strong></li>
+        <li>AirDrop or email to your computer</li>
+      </ol>
+    </div>
+  </details>
+
+  <details>
+    <summary>Chase</summary>
+    <div>
+      <ol>
+        <li>Log in at <a href="https://chase.com">chase.com</a></li>
+        <li>Click your account</li>
+        <li>Find <strong>Download account activity</strong></li>
+        <li>Select last 12 months, CSV format</li>
+      </ol>
+    </div>
+  </details>
+
+  <details>
+    <summary>Other banks</summary>
+    <div>
+      <p>Look for "Export," "Download," or "Download transactions" in your account settings. Choose <strong>CSV</strong> (not PDF or Excel).</p>
+      <p>Can't find it? Search "[your bank] export transactions CSV"</p>
+    </div>
+  </details>
+
+  <div class="tip"><strong>Save it somewhere easy to find</strong> — you'll move it into the project folder in step 2.</div>
+</article>
+
+<!-- STEP 2: Download Project -->
+<article class="step" id="step-2" data-step="2">
+  <div class="step-num">2</div>
+  <div class="step-header">
+    <h2>Download the Project</h2>
+    <span class="step-time">2 min</span>
+  </div>
+
+  <ol>
+    <li>Go to <a href="https://github.com/rohunvora/just-fucking-cancel">github.com/rohunvora/just-fucking-cancel</a></li>
+    <li>Click the green <strong>Code</strong> button</li>
+    <li>Click <strong>Download ZIP</strong></li>
+    <li>Unzip the file (double-click on Mac, right-click → Extract on Windows)</li>
+    <li>Move the folder to your Desktop</li>
+  </ol>
+
+  <div class="warning">
+    <strong>Move your CSV into this folder</strong><br>
+    Drag the CSV from step 1 into the <code>just-fucking-cancel-main</code> folder.
+  </div>
+</article>
+
+<!-- STEP 3: Install Claude Code -->
+<article class="step" id="step-3" data-step="3">
+  <div class="step-num">3</div>
+  <div class="step-header">
+    <h2>Install Claude Code</h2>
+    <span class="step-time">5 min</span>
+  </div>
+
+  <p>Claude Code is a free command-line tool from Anthropic.</p>
+
+  <h3>Open your terminal</h3>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('mac')">Mac</button>
+    <button class="tab" onclick="showTab('win')">Windows</button>
+  </div>
+
+  <div id="mac" class="tab-content active">
+    <ol>
+      <li>Press <code>Cmd + Space</code></li>
+      <li>Type <strong>Terminal</strong> and press Enter</li>
+    </ol>
+  </div>
+
+  <div id="win" class="tab-content">
+    <ol>
+      <li>Press <code>Win + X</code></li>
+      <li>Click <strong>Windows PowerShell</strong></li>
+    </ol>
+  </div>
+
+  <h3>Run the installer</h3>
+
+  <p>Paste this command and press Enter:</p>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('mac-install')">Mac</button>
+    <button class="tab" onclick="showTab('win-install')">Windows</button>
+  </div>
+
+  <div id="mac-install" class="tab-content active">
+    <pre><code>curl -fsSL https://claude.ai/install.sh | sh</code></pre>
+  </div>
+
+  <div id="win-install" class="tab-content">
+    <pre><code>irm https://claude.ai/install.ps1 | iex</code></pre>
+  </div>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-btn close"></div>
+      <div class="terminal-btn min"></div>
+      <div class="terminal-btn max"></div>
+      <div class="terminal-title">Terminal</div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">you@mac</span> <span class="t-path">~</span></div>
+      <div>$ curl -fsSL https://claude.ai/install.sh | sh</div>
+      <div class="t-dim" style="margin-top: 8px">Installing Claude Code...</div>
+      <div class="t-green" style="margin-top: 4px">Done! Run 'claude' to get started.</div>
+    </div>
+  </div>
+</article>
+
+<!-- STEP 4: Run Audit -->
+<article class="step" id="step-4" data-step="4">
+  <div class="step-num">4</div>
+  <div class="step-header">
+    <h2>Run the Audit</h2>
+    <span class="step-time">5-10 min</span>
+  </div>
+
+  <h3>Navigate to the project</h3>
+
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('mac2')">Mac</button>
+    <button class="tab" onclick="showTab('win2')">Windows</button>
+  </div>
+
+  <div id="mac2" class="tab-content active">
+    <pre><code>cd ~/Desktop/just-fucking-cancel-main</code></pre>
+    <div class="tip"><strong>Shortcut:</strong> Type <code>cd </code> then drag the folder into Terminal.</div>
+  </div>
+
+  <div id="win2" class="tab-content">
+    <pre><code>cd $HOME\Desktop\just-fucking-cancel-main</code></pre>
+    <div class="tip"><strong>Shortcut:</strong> Shift + right-click folder → Copy as path, then <code>cd </code> and paste.</div>
+  </div>
+
+  <h3>Start Claude Code</h3>
+
+  <pre><code>claude</code></pre>
+
+  <p><strong>First time?</strong> A browser opens for sign-in. Use your Claude Pro credentials, then return to the terminal.</p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-btn close"></div>
+      <div class="terminal-btn min"></div>
+      <div class="terminal-btn max"></div>
+      <div class="terminal-title">Terminal — claude</div>
+    </div>
+    <div class="terminal-body">
+      <div><span class="t-prompt">you@mac</span> <span class="t-path">~/Desktop/just-fucking-cancel-main</span></div>
+      <div>$ claude</div>
+      <div class="t-box">
+        <div class="t-header">Claude Code</div>
+        <div class="t-dim">v1.0.23</div>
+        <div class="t-blue">Type your message or /help for commands</div>
+      </div>
+      <div style="margin-top: 10px;">
+        <span class="t-caret">&gt;</span> Audit my subscriptions. I have transaction CSVs in this folder.
+      </div>
+    </div>
+  </div>
+
+  <h3>Run the audit</h3>
+
+  <p>Type this:</p>
+  <pre><code>Audit my subscriptions. I have transaction CSVs in this folder.</code></pre>
+
+  <h3>What happens</h3>
+
+  <ul class="checklist">
+    <li>Claude reads your transaction files</li>
+    <li>Finds recurring charges (Netflix, Spotify, that gym...)</li>
+    <li>Asks you questions: "Do you still use Hulu?"</li>
+    <li>You answer honestly—this is where you find forgotten subscriptions</li>
+    <li>Generates an HTML report you can open in your browser</li>
+  </ul>
+
+  <h3>When you're done</h3>
+
+  <ul>
+    <li>Type <code>/exit</code> to quit</li>
+    <li>Or press <code>Ctrl + C</code></li>
+    <li>Or close the window</li>
+  </ul>
+</article>
+
+<!-- STEP 5: Cancel -->
+<article class="step" id="step-5" data-step="5">
+  <div class="step-num">5</div>
+  <div class="step-header">
+    <h2>Cancel Subscriptions</h2>
+    <span class="step-time">varies</span>
+  </div>
+
+  <p>Claude can open Chrome and cancel subscriptions for you.</p>
+
+  <h3>Enable browser control</h3>
+
+  <p>In Claude Code, type:</p>
+  <pre><code>/mcp</code></pre>
+
+  <p>Make sure browser tools show as <strong>enabled</strong>:</p>
+
+  <div class="terminal">
+    <div class="terminal-bar">
+      <div class="terminal-btn close"></div>
+      <div class="terminal-btn min"></div>
+      <div class="terminal-btn max"></div>
+      <div class="terminal-title">Terminal — claude</div>
+    </div>
+    <div class="terminal-body">
+      <div class="t-header" style="font-size: 13px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid #3c3c3c;">MCP Servers</div>
+      <div class="t-blue" style="margin-bottom: 6px;">Available Servers</div>
+      <div class="t-server">
+        <div>
+          <div style="color: #fff; font-weight: 500;">claude-in-chrome</div>
+          <div class="t-dim">Browser automation</div>
+          <div class="t-green">23 tools available</div>
+        </div>
+        <div class="t-enabled">Enabled</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Start canceling</h3>
+
+  <pre><code>Help me cancel the subscriptions I marked for cancellation.</code></pre>
+
+  <h3>What you'll see</h3>
+
+  <ul class="checklist">
+    <li>Chrome opens automatically</li>
+    <li>Claude navigates to Netflix (or wherever)</li>
+    <li>Claude clicks through the cancellation flow</li>
+    <li>Claude asks for your confirmation before final steps</li>
+  </ul>
+
+  <div class="browser">
+    <div class="browser-bar">
+      <div class="terminal-btn close"></div>
+      <div class="terminal-btn min"></div>
+      <div class="terminal-btn max"></div>
+      <div class="terminal-title" style="color: #666;">Netflix — Account Settings</div>
+    </div>
+    <div class="browser-body">
+      <h4>Account</h4>
+      <div class="sub">Membership Details</div>
+      <div class="browser-card">
+        <strong>Standard plan</strong>
+        <div class="sub">Next payment: January 7, 2026</div>
+      </div>
+      <div class="browser-row">
+        <span>Manage membership</span>
+        <span style="color: #999;">&gt;</span>
+      </div>
+      <div class="browser-badge">
+        <span>⚡</span> Claude is active in this tab
+      </div>
+    </div>
+  </div>
+
+  <h3>Login prompts</h3>
+
+  <p>When sites ask you to log in, do it yourself—Claude doesn't know your passwords. Just say "continue" or "I'm logged in" when ready.</p>
+</article>
+
+<!-- TROUBLESHOOTING -->
+<section>
+  <h2>Troubleshooting</h2>
+
+  <details>
+    <summary>"claude: command not found"</summary>
+    <div>
+      <ul>
+        <li>Close and reopen Terminal/PowerShell</li>
+        <li>Try running the installer again</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>Claude can't find my CSV</summary>
+    <div>
+      <ul>
+        <li>Make sure the CSV is inside the project folder</li>
+        <li>Make sure it's a <code>.csv</code> file, not <code>.xlsx</code> or <code>.pdf</code></li>
+        <li>Tell Claude the exact filename: "Look for transactions.csv"</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>Browser automation not working</summary>
+    <div>
+      <ul>
+        <li>Make sure <strong>Google Chrome</strong> is installed</li>
+        <li>Close all Chrome windows, then let Claude open it</li>
+        <li>Run <code>/mcp</code> and check browser tools are enabled</li>
+      </ul>
+    </div>
+  </details>
+
+  <details>
+    <summary>Audit taking too long</summary>
+    <div>
+      <p>Large files take longer. If stuck for 10+ minutes, press <code>Ctrl + C</code> and try with a shorter date range.</p>
+    </div>
+  </details>
+</section>
+
+<!-- PRIVACY -->
+<section>
+  <h2>Privacy</h2>
+
+  <ul>
+    <li>CSV files never leave your machine</li>
+    <li>The audit report is a local HTML file</li>
+    <li>Nothing is uploaded or shared with anyone</li>
+  </ul>
+  <p>Only your conversation with Claude goes to Anthropic—not your raw transaction data.</p>
+</section>
+
+<footer>
+  <p>Questions? <a href="https://github.com/rohunvora/just-fucking-cancel/issues">Open an issue</a> on GitHub</p>
+  <p><em>Stop paying for things you don't use.</em></p>
+</footer>
+
+<script>
+// Progress state
+let isScrolling = false;
+const progressSteps = document.querySelectorAll('.progress-step');
+
+const updateProgress = (stepNum) => {
+  progressSteps.forEach((ps, i) => {
+    ps.classList.remove('active', 'completed');
+    if (i + 1 < stepNum) ps.classList.add('completed');
+    if (i + 1 === stepNum) ps.classList.add('active');
+  });
+};
+
+// Scroll to step when clicking progress bar
+function scrollToStep(num) {
+  // Defer everything to avoid blocking click handler
+  setTimeout(() => {
+    const step = document.getElementById('step-' + num);
+    if (step) {
+      isScrolling = true;
+      updateProgress(num);
+      const y = step.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo(0, y);
+      setTimeout(() => { isScrolling = false; }, 100);
+    }
+  }, 0);
+}
+
+// Tab switching
+function showTab(id) {
+  const pairs = [
+    ['mac', 'win'],
+    ['mac-install', 'win-install'],
+    ['mac2', 'win2']
+  ];
+
+  for (const pair of pairs) {
+    if (pair.includes(id)) {
+      pair.forEach(tabId => {
+        const el = document.getElementById(tabId);
+        if (el) {
+          el.classList.toggle('active', tabId === id);
+        }
+      });
+      const activeTab = document.getElementById(id);
+      if (activeTab) {
+        const container = activeTab.previousElementSibling;
+        if (container && container.classList.contains('tabs')) {
+          container.querySelectorAll('.tab').forEach((btn, i) => {
+            btn.classList.toggle('active', pair[i] === id);
+          });
+        }
+      }
+      break;
+    }
+  }
+}
+
+// Copy buttons for standalone pre blocks only (not inside .terminal)
+document.querySelectorAll('pre code').forEach(block => {
+  const pre = block.parentNode;
+  // Skip if inside terminal mock
+  if (pre.closest('.terminal')) return;
+
+  pre.style.paddingRight = '60px';
+
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = 'Copy';
+  btn.onclick = (e) => {
+    e.preventDefault();
+    navigator.clipboard.writeText(block.textContent.trim()).then(() => {
+      btn.textContent = 'Copied!';
+      pre.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        pre.classList.remove('copied');
+      }, 1500);
+    });
+  };
+  pre.appendChild(btn);
+});
+
+// Progress stepper - highlight current step based on scroll
+const steps = document.querySelectorAll('.step');
+
+const observer = new IntersectionObserver(entries => {
+  if (isScrolling) return;
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const stepNum = parseInt(entry.target.dataset.step);
+      updateProgress(stepNum);
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-80px 0px -50% 0px' });
+
+steps.forEach(step => observer.observe(step));
+</script>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+</body>
+</html>
