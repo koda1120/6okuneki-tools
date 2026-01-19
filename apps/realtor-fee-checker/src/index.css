@@ -14,6 +14,12 @@ textarea {
   font-size: 16px;
 }
 
+/* Select dropdown スクロール対応 */
+select {
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 /* スクロールバーのカスタマイズ */
 ::-webkit-scrollbar {
   width: 4px;
