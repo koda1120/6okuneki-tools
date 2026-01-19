@@ -80,7 +80,7 @@ function detectGenericColumns(fields: string[]): { date: string; description: st
   // 日付カラムの候補
   const datePatterns = ['日付', '利用日', 'ご利用日', '日時', 'Date', 'DATE'];
   // 説明カラムの候補
-  const descPatterns = ['店名', '利用店名', 'ご利用先', '摘要', '利用店名・商品名', '説明', 'Description', 'DESCRIPTION'];
+  const descPatterns = ['店名', '利用店名', 'ご利用先', '利用先', '摘要', '利用店名・商品名', '説明', 'Description', 'DESCRIPTION'];
   // 金額カラムの候補
   const amountPatterns = ['金額', '利用金額', 'ご利用金額', 'Amount', 'AMOUNT'];
 
@@ -88,17 +88,26 @@ function detectGenericColumns(fields: string[]): { date: string; description: st
   let descCol: string | null = null;
   let amountCol: string | null = null;
 
+  console.log('[CSV Debug] normalizedFields:', normalizedFields);
+  console.log('[CSV Debug] field hex codes:', normalizedFields.map(f => Array.from(f).map(c => c.charCodeAt(0).toString(16)).join(' ')));
+
   for (const field of normalizedFields) {
+    console.log(`[CSV Debug] checking field: "${field}"`);
     if (!dateCol && datePatterns.some(p => field.includes(p))) {
       dateCol = field;
+      console.log(`[CSV Debug] dateCol matched: "${field}"`);
     }
     if (!descCol && descPatterns.some(p => field.includes(p))) {
       descCol = field;
+      console.log(`[CSV Debug] descCol matched: "${field}"`);
     }
     if (!amountCol && amountPatterns.some(p => field.includes(p))) {
       amountCol = field;
+      console.log(`[CSV Debug] amountCol matched: "${field}"`);
     }
   }
+
+  console.log('[CSV Debug] result:', { dateCol, descCol, amountCol });
 
   if (dateCol && descCol && amountCol) {
     return { date: dateCol, description: descCol, amount: amountCol };
@@ -192,13 +201,32 @@ export async function parseCsv(file: File, formatId: string = 'auto'): Promise<P
     return sjisResult;
   }
 
-  // どちらも失敗
+  // どちらも失敗 - デバッグ用に詳細情報を取得
+  const debugInfo = await getDebugInfo(file);
   return {
     success: false,
     transactions: [],
     format: 'unknown',
-    error: 'CSVフォーマットを検出できませんでした。対応しているカード会社のCSVをお使いください。'
+    error: `CSVフォーマットを検出できませんでした。検出されたカラム: ${debugInfo}`
   };
+}
+
+// デバッグ用：CSVのカラム情報を取得
+async function getDebugInfo(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    Papa.parse(file, {
+      header: true,
+      preview: 1,
+      encoding: 'UTF-8',
+      complete: (results) => {
+        const fields = results.meta.fields || [];
+        resolve(fields.join(', ') || '(なし)');
+      },
+      error: () => {
+        resolve('(読み取りエラー)');
+      }
+    });
+  });
 }
 
 // 対応フォーマット一覧を取得

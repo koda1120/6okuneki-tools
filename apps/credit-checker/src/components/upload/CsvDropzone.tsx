@@ -89,9 +89,12 @@ export function CsvDropzone({ onFileSelect, selectedFile, onClear, isLoading }: 
 
         {/* PDF注意書き */}
         {isPdf && (
-          <div className="mt-3 p-3 bg-warning/10 rounded-lg">
+          <div className="mt-3 p-3 bg-warning/10 rounded-lg space-y-1">
             <p className="text-xs text-warning leading-relaxed">
-              PDFからの読み取りは精度にばらつきが出る場合があります。可能であればCSVのご利用をおすすめします。
+              PDFは分析に時間がかかります（10〜30秒程度）。また、精度にばらつきが出る場合があります。
+            </p>
+            <p className="text-xs text-warning/80 leading-relaxed">
+              お急ぎの場合や正確な分析には、CSVファイルをおすすめします。
             </p>
           </div>
         )}

@@ -28,7 +28,7 @@ const AMOUNT_PATTERNS = [
   /(\d{1,3}(?:,\d{3})+|\d+)(?:\s*円)?/g,
 ];
 
-// PDFからテキストを抽出
+// PDFからテキストを抽出（行ごとに改行を保持）
 async function extractTextFromPdf(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -38,10 +38,45 @@ async function extractTextFromPdf(file: File): Promise<string> {
   for (let i = 1; i <= pdf.numPages; i++) {
     const page = await pdf.getPage(i);
     const textContent = await page.getTextContent();
-    const pageText = textContent.items
-      .map((item: any) => item.str)
-      .join(' ');
-    fullText += pageText + '\n';
+
+    // Y座標でグループ化して行を構築
+    const items = textContent.items as any[];
+    if (items.length === 0) continue;
+
+    // Y座標でソート（上から下へ）
+    const sortedItems = [...items].sort((a, b) => {
+      const yA = a.transform ? a.transform[5] : 0;
+      const yB = b.transform ? b.transform[5] : 0;
+      return yB - yA; // 大きいY = 上
+    });
+
+    let currentY: number | null = null;
+    const lines: string[] = [];
+    let currentLine: string[] = [];
+
+    for (const item of sortedItems) {
+      if (!item.str) continue;
+
+      const y = item.transform ? Math.round(item.transform[5]) : 0;
+
+      // Y座標が変わったら新しい行
+      if (currentY !== null && Math.abs(y - currentY) > 5) {
+        if (currentLine.length > 0) {
+          lines.push(currentLine.join(' '));
+        }
+        currentLine = [];
+      }
+
+      currentLine.push(item.str);
+      currentY = y;
+    }
+
+    // 最後の行を追加
+    if (currentLine.length > 0) {
+      lines.push(currentLine.join(' '));
+    }
+
+    fullText += lines.join('\n') + '\n';
   }
 
   return fullText;

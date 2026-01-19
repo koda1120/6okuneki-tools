@@ -109,14 +109,14 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
         >
           <span className="flex items-center justify-center gap-2">
             <RotateCcw className="w-5 h-5" />
-            別のCSVを診断する
+            別のファイルを診断する
           </span>
         </Button>
 
         {/* 免責事項 */}
         <div className="mt-10 p-5 bg-bg-card rounded-soft shadow-warm">
           <p className="text-xs text-text-sub leading-relaxed">
-            <strong className="text-text-main">データの取り扱い：</strong>CSVデータはサーバーに送信されません。すべてブラウザ内で処理され、ページを閉じると破棄されます。
+            <strong className="text-text-main">データの取り扱い：</strong>アップロードしたデータはサーバーに送信されません。すべてブラウザ内で処理され、ページを閉じると破棄されます。
           </p>
           <p className="text-xs text-text-sub leading-relaxed mt-3">
             <strong className="text-text-main">分類精度：</strong>自動分類は100%の精度を保証しません。分類できなかった項目はご自身で確認してください。

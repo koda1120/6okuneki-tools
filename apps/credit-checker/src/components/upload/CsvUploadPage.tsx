@@ -173,9 +173,16 @@ export function CsvUploadPage({ onComplete }: CsvUploadPageProps) {
 
         {/* ローディング表示 */}
         {isParsing && (
-          <div className="flex items-center justify-center gap-2 py-4 text-text-sub">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span>{isPdf ? 'PDFを解析中...' : 'CSVを解析中...'}</span>
+          <div className="flex flex-col items-center justify-center gap-2 py-4 text-text-sub">
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>{isPdf ? 'PDFを解析中...' : 'CSVを解析中...'}</span>
+            </div>
+            {isPdf && (
+              <p className="text-xs text-text-sub/70">
+                PDFの解析には少し時間がかかります
+              </p>
+            )}
           </div>
         )}
       </div>
