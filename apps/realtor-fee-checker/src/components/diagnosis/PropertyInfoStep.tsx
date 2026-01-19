@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Card } from '@6okuneki/shared';
 import { ChevronRight } from 'lucide-react';
 import type { PropertyInfo, PropertyType, AreaType, StationDistance } from '../../types';
@@ -10,23 +11,61 @@ interface PropertyInfoStepProps {
   canProceed: boolean;
 }
 
+// 万円オプション（3〜20万円）
+const MAN_OPTIONS = Array.from({ length: 18 }, (_, i) => ({
+  value: i + 3,
+  label: `${i + 3}万円`,
+}));
+
+// 千円オプション（0〜9千円）
+const SEN_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
+  value: i,
+  label: i === 0 ? '0千円' : `${i}千円`,
+}));
+
 export function PropertyInfoStep({
   propertyInfo,
   onUpdate,
   onNext,
   canProceed,
 }: PropertyInfoStepProps) {
-  const handleRentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [manYen, setManYen] = useState<number | null>(null);
+  const [senYen, setSenYen] = useState<number | null>(null);
+
+  // 万円・千円が両方選択されたら家賃を計算
+  useEffect(() => {
+    if (manYen !== null && senYen !== null) {
+      const rent = manYen + senYen * 0.1;
+      onUpdate({ rent });
+    } else if (manYen !== null && senYen === null) {
+      // 万円だけ選択された場合は千円を0として計算
+      onUpdate({ rent: manYen });
+    }
+  }, [manYen, senYen, onUpdate]);
+
+  const handleManChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     if (value === '') {
+      setManYen(null);
       onUpdate({ rent: null });
     } else {
-      const numValue = parseFloat(value);
-      if (!isNaN(numValue) && numValue >= 0) {
-        onUpdate({ rent: numValue });
-      }
+      setManYen(parseInt(value, 10));
     }
   };
+
+  const handleSenChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value;
+    if (value === '') {
+      setSenYen(null);
+    } else {
+      setSenYen(parseInt(value, 10));
+    }
+  };
+
+  const selectClassName = `h-12 px-4 border border-border rounded-lg text-base
+    focus:border-accent focus:outline-none bg-white appearance-none
+    bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
+    bg-no-repeat bg-[right_12px_center]`;
 
   return (
     <div className="space-y-4">
@@ -37,24 +76,41 @@ export function PropertyInfoStep({
           {/* 家賃（必須） */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-text-main mb-2">
-              家賃（万円）<span className="text-red-500 ml-1">*必須</span>
+              家賃<span className="text-red-500 ml-1">*必須</span>
             </label>
-            <div className="relative">
-              <input
-                type="number"
-                inputMode="decimal"
-                step="0.1"
-                min="0"
-                value={propertyInfo.rent ?? ''}
-                onChange={handleRentChange}
-                className="w-full h-12 px-4 pr-12 border border-border rounded-lg text-base
-                         focus:border-accent focus:outline-none"
-                placeholder="例: 8.5"
-              />
-              <span className="absolute right-4 top-1/2 -translate-y-1/2 text-text-sub">
-                万円
-              </span>
+            <div className="flex items-center gap-2">
+              <select
+                value={manYen ?? ''}
+                onChange={handleManChange}
+                className={`flex-1 ${selectClassName}`}
+              >
+                <option value="">万円</option>
+                {MAN_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <span className="text-text-sub">+</span>
+              <select
+                value={senYen ?? ''}
+                onChange={handleSenChange}
+                className={`flex-1 ${selectClassName}`}
+                disabled={manYen === null}
+              >
+                <option value="">千円</option>
+                {SEN_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
             </div>
+            {propertyInfo.rent !== null && (
+              <p className="text-sm text-accent font-medium mt-2">
+                → {propertyInfo.rent}万円
+              </p>
+            )}
           </div>
 
           {/* 物件種別（任意） */}
@@ -67,10 +123,7 @@ export function PropertyInfoStep({
               onChange={(e) =>
                 onUpdate({ propertyType: (e.target.value || null) as PropertyType | null })
               }
-              className="w-full h-12 px-4 border border-border rounded-lg text-base
-                       focus:border-accent focus:outline-none bg-white appearance-none
-                       bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
-                       bg-no-repeat bg-[right_12px_center]"
+              className={`w-full ${selectClassName}`}
             >
               <option value="">選択してください</option>
               {PROPERTY_TYPE_OPTIONS.map((option) => (
@@ -84,17 +137,14 @@ export function PropertyInfoStep({
           {/* エリア（任意） */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-text-main mb-2">
-              エリア
+              都道府県
             </label>
             <select
               value={propertyInfo.area ?? ''}
               onChange={(e) =>
                 onUpdate({ area: (e.target.value || null) as AreaType | null })
               }
-              className="w-full h-12 px-4 border border-border rounded-lg text-base
-                       focus:border-accent focus:outline-none bg-white appearance-none
-                       bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
-                       bg-no-repeat bg-[right_12px_center]"
+              className={`w-full ${selectClassName}`}
             >
               <option value="">選択してください</option>
               {AREA_OPTIONS.map((option) => (
@@ -115,10 +165,7 @@ export function PropertyInfoStep({
               onChange={(e) =>
                 onUpdate({ stationDistance: (e.target.value || null) as StationDistance | null })
               }
-              className="w-full h-12 px-4 border border-border rounded-lg text-base
-                       focus:border-accent focus:outline-none bg-white appearance-none
-                       bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
-                       bg-no-repeat bg-[right_12px_center]"
+              className={`w-full ${selectClassName}`}
             >
               <option value="">選択してください</option>
               {STATION_DISTANCE_OPTIONS.map((option) => (
