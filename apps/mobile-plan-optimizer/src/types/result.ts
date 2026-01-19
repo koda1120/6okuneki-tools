@@ -8,6 +8,12 @@ export interface SavingTip {
   estimatedSaving?: string;
 }
 
+// 適用された割引
+export interface AppliedDiscount {
+  name: string;
+  amount: number;
+}
+
 // スコア内訳
 export interface ScoreBreakdown {
   priceScore: number;
@@ -26,7 +32,7 @@ export interface PlanScore {
   monthlyPrice: number;
   yearlyPrice: number;
   savingsPerYear?: number;
-  appliedDiscounts: string[];
+  appliedDiscounts: AppliedDiscount[];
   warnings: string[];
   recommendedVoiceOption: 'none' | '5min' | 'unlimited';
 }

@@ -151,7 +151,7 @@ export function PlanCard({ planScore, rank, isTop }: PlanCardProps) {
                 className="inline-flex items-center gap-1 text-xs bg-success/10 text-success px-2 py-1 rounded"
               >
                 <Check className="w-3 h-3" />
-                {discount}
+                {discount.name} -{discount.amount.toLocaleString()}円
               </span>
             ))}
           </div>

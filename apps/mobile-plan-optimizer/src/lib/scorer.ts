@@ -1,6 +1,6 @@
 import type { Plan } from '../types/plan';
 import type { UserUsage, CommonSettings } from '../types/diagnosis';
-import type { PlanScore, ScoreBreakdown } from '../types/result';
+import type { PlanScore, ScoreBreakdown, AppliedDiscount } from '../types/result';
 import { estimateDataUsage, recommendVoiceOption } from './filter';
 
 // カード名とユーザー選択値のマッピング
@@ -314,25 +314,35 @@ function calculateMonthlyPrice(
   return Math.max(0, price);
 }
 
-function getAppliedDiscounts(plan: Plan, common: CommonSettings): string[] {
-  const discounts: string[] = [];
+function getAppliedDiscounts(plan: Plan, common: CommonSettings): AppliedDiscount[] {
+  const discounts: AppliedDiscount[] = [];
 
   if (
     plan.homeInternetDiscount.available &&
+    plan.homeInternetDiscount.discountAmount &&
     common.homeInternet !== 'none'
   ) {
-    discounts.push('光回線セット割');
+    discounts.push({
+      name: '光回線セット割',
+      amount: plan.homeInternetDiscount.discountAmount,
+    });
   }
 
-  if (plan.cardDiscount.available) {
+  if (plan.cardDiscount.available && plan.cardDiscount.discountAmount) {
     const targetCards = plan.cardDiscount.targetCards || [];
     if (matchesTargetCard(common.creditCard, targetCards)) {
-      discounts.push('カード割引');
+      discounts.push({
+        name: 'カード割引',
+        amount: plan.cardDiscount.discountAmount,
+      });
     }
   }
 
-  if (plan.familyDiscount.available && common.familyMembers >= 2) {
-    discounts.push(`家族割（${common.familyMembers}人）`);
+  if (plan.familyDiscount.available && plan.familyDiscount.discountPerLine && common.familyMembers >= 2) {
+    discounts.push({
+      name: `家族割（${common.familyMembers}人）`,
+      amount: plan.familyDiscount.discountPerLine,
+    });
   }
 
   return discounts;
