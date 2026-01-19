@@ -8,14 +8,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        'bg-base': '#F5F7FA',
+        'bg-base': '#F5F6F8',       // クールグレー
         'bg-card': '#FFFFFF',
-        'text-main': '#1E2A3B',
-        'text-sub': '#5A6978',
-        'accent': '#2C4A7C',
-        'line-green': '#06C755',
-        'border': '#D8DEE6',
-        'warning': '#E5A73B',
+        'text-main': '#1A1A2E',     // ほぼ黒
+        'text-sub': '#5C6878',
+        'accent': '#1E3A5F',        // ダークネイビー
+        'line-green': '#06C755',    // LINE CTA用
+        'border': '#E2E5EA',
+        'warning': '#D97706',
+        'gold': '#B8860B',          // ADスコア高い時
+      },
+      boxShadow: {
+        'card': '0 2px 8px rgba(0, 0, 0, 0.06)',
+      },
+      borderRadius: {
+        'card': '8px',
       },
       fontFamily: {
         sans: ['Noto Sans JP', 'system-ui', 'sans-serif'],

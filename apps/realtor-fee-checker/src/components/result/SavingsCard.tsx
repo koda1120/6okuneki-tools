@@ -1,5 +1,4 @@
-import { Card } from '@6okuneki/shared';
-import { Wallet, AlertTriangle } from 'lucide-react';
+import { Wallet, AlertTriangle, TrendingDown } from 'lucide-react';
 import { formatCurrency } from '../../lib/savingsCalculator';
 
 interface SavingsCardProps {
@@ -16,42 +15,63 @@ export function SavingsCard({
   isOvercharged,
 }: SavingsCardProps) {
   return (
-    <Card>
-      <div className="p-4">
-        <h3 className="text-sm font-medium text-text-sub mb-3">節約可能額</h3>
-
+    <div className="bg-white border border-border rounded-card shadow-card overflow-hidden">
+      <div className="p-5">
         {/* メイン金額 */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 bg-accent/10 rounded-full flex items-center justify-center">
-            <Wallet className="w-5 h-5 text-accent" />
+        <div className="flex items-center gap-4 mb-5">
+          <div className="w-12 h-12 bg-accent/10 rounded-card flex items-center justify-center">
+            <Wallet className="w-6 h-6 text-accent" />
           </div>
           <div>
+            <p className="text-xs text-text-sub mb-1">節約可能額</p>
             <p className="text-2xl font-bold text-accent">
               最大 {formatCurrency(potentialSavings)}
             </p>
-            <p className="text-xs text-text-sub">交渉次第で節約できる可能性があります</p>
           </div>
         </div>
 
-        {/* 詳細 */}
-        <div className="bg-bg-base rounded-lg p-3 space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-text-sub">請求額</span>
-            <span className="text-text-main font-medium">{formatCurrency(currentFee)}</span>
-          </div>
-          <div className="flex justify-between text-sm">
-            <span className="text-text-sub">法定上限</span>
-            <span className="text-text-main font-medium">{formatCurrency(legalMaxFee)}</span>
-          </div>
+        {/* 比較表 */}
+        <div className="border border-border rounded-card overflow-hidden">
+          <table className="w-full text-sm">
+            <tbody>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 text-text-sub bg-bg-base">請求額</td>
+                <td className="px-4 py-3 text-right font-medium text-text-main">
+                  {formatCurrency(currentFee)}
+                </td>
+              </tr>
+              <tr className="border-b border-border">
+                <td className="px-4 py-3 text-text-sub bg-bg-base">法定上限</td>
+                <td className="px-4 py-3 text-right font-medium text-text-main">
+                  {formatCurrency(legalMaxFee)}
+                </td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3 text-text-sub bg-bg-base">
+                  <div className="flex items-center gap-1">
+                    <TrendingDown className="w-4 h-4 text-accent" />
+                    交渉目標
+                  </div>
+                </td>
+                <td className="px-4 py-3 text-right font-bold text-accent">
+                  0円
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+
+        <p className="text-xs text-text-sub mt-3 text-center">
+          AD付き物件なら仲介手数料0円も可能です
+        </p>
 
         {/* 法定上限超過警告 */}
         {isOvercharged && (
-          <div className="mt-4 p-3 bg-warning/10 border border-warning/20 rounded-lg flex gap-2">
-            <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0" />
+          <div className="mt-4 p-4 bg-warning/10 border border-warning/30 rounded-card flex gap-3">
+            <AlertTriangle className="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-medium text-warning">法定上限を超えている可能性</p>
-              <p className="text-xs text-text-sub mt-1">
+              <p className="text-sm font-bold text-warning">法定上限を超えている可能性</p>
+              <p className="text-xs text-text-sub mt-1 leading-relaxed">
                 仲介手数料の上限は家賃の1.1ヶ月分（税込）です。
                 この金額は上限を超えている可能性があります。
               </p>
@@ -59,6 +79,6 @@ export function SavingsCard({
           </div>
         )}
       </div>
-    </Card>
+    </div>
   );
 }
