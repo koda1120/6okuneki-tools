@@ -11,16 +11,16 @@ interface PropertyInfoStepProps {
   canProceed: boolean;
 }
 
-// 万円オプション（3〜20万円）
+// 万円オプション（3〜20）
 const MAN_OPTIONS = Array.from({ length: 18 }, (_, i) => ({
   value: i + 3,
-  label: `${i + 3}万円`,
+  label: `${i + 3}`,
 }));
 
-// 千円オプション（0〜9千円）
+// 千円オプション（0〜9）
 const SEN_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
   value: i,
-  label: i === 0 ? '0千円' : `${i}千円`,
+  label: `${i}`,
 }));
 
 export function PropertyInfoStep({
@@ -78,33 +78,34 @@ export function PropertyInfoStep({
             <label className="block text-sm font-medium text-text-main mb-2">
               家賃<span className="text-red-500 ml-1">*必須</span>
             </label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <select
                 value={manYen ?? ''}
                 onChange={handleManChange}
-                className={`flex-1 ${selectClassName}`}
+                className={`w-20 ${selectClassName}`}
               >
-                <option value="">万円</option>
+                <option value="">--</option>
                 {MAN_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
-              <span className="text-text-sub">+</span>
+              <span className="text-text-main font-medium">万</span>
               <select
                 value={senYen ?? ''}
                 onChange={handleSenChange}
-                className={`flex-1 ${selectClassName}`}
+                className={`w-20 ${selectClassName}`}
                 disabled={manYen === null}
               >
-                <option value="">千円</option>
+                <option value="">--</option>
                 {SEN_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
+              <span className="text-text-main font-medium">千円</span>
             </div>
             {propertyInfo.rent !== null && (
               <p className="text-sm text-accent font-medium mt-2">
