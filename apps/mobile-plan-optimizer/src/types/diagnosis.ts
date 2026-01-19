@@ -35,6 +35,9 @@ export type SupportNeed =
   | 'shop_preferred'    // あると安心
   | 'online_ok';        // オンラインでOK
 
+// クレジットカード
+export type CreditCard = 'd_card' | 'au_pay' | 'paypay' | 'rakuten';
+
 // ユーザーの利用状況
 export interface UserUsage {
   dataUsage: DataUsage;
@@ -47,7 +50,7 @@ export interface UserUsage {
 export interface CommonSettings {
   // 割引条件
   homeInternet: 'docomo_hikari' | 'au_hikari' | 'softbank_hikari' | 'nuro' | 'other' | 'none';
-  creditCard: 'd_card' | 'au_pay' | 'paypay' | 'rakuten' | 'other' | 'none';
+  creditCards: CreditCard[];  // 複数選択可能
 
   // 家族割引用（同一キャリアで契約する家族の人数、本人含む）
   familyMembers: 1 | 2 | 3 | 4 | 5;
@@ -72,7 +75,7 @@ export const createEmptyUserUsage = (): UserUsage => ({
 
 export const createEmptyCommonSettings = (): CommonSettings => ({
   homeInternet: 'none',
-  creditCard: 'none',
+  creditCards: [],
   familyMembers: 1,
   priority: 'price',
   supportNeed: 'online_ok',

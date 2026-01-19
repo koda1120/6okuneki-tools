@@ -83,7 +83,9 @@ export function ConfirmStep({ user, common, onConfirm }: ConfirmStepProps) {
           <div className="flex justify-between">
             <span className="text-text-sub">クレジットカード</span>
             <span className="text-text-main">
-              {getLabel(CREDIT_CARD_OPTIONS, common.creditCard)}
+              {common.creditCards.length > 0
+                ? common.creditCards.map((card) => getLabel(CREDIT_CARD_OPTIONS, card)).join('、')
+                : 'なし'}
             </span>
           </div>
           <div className="flex justify-between">

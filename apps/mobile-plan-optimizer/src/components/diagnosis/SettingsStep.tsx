@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Settings, Globe, CreditCard, Users, Target, Headphones } from 'lucide-react';
-import type { CommonSettings } from '../../types/diagnosis';
+import { Settings, Globe, CreditCard, Users, Target, Headphones, Check } from 'lucide-react';
+import type { CommonSettings, CreditCard as CreditCardType } from '../../types/diagnosis';
 import { createEmptyCommonSettings } from '../../types/diagnosis';
 import {
   HOME_INTERNET_OPTIONS,
@@ -20,6 +20,17 @@ export function SettingsStep({ initialData, onComplete }: SettingsStepProps) {
 
   const updateField = <K extends keyof CommonSettings>(key: K, value: CommonSettings[K]) => {
     setData((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const toggleCreditCard = (card: CreditCardType) => {
+    setData((prev) => {
+      const currentCards = prev.creditCards;
+      if (currentCards.includes(card)) {
+        return { ...prev, creditCards: currentCards.filter((c) => c !== card) };
+      } else {
+        return { ...prev, creditCards: [...currentCards, card] };
+      }
+    });
   };
 
   const handleNext = () => {
@@ -76,22 +87,26 @@ export function SettingsStep({ initialData, onComplete }: SettingsStepProps) {
           </label>
         </div>
         <p className="text-xs text-text-sub mb-3">
-          カード割引が適用できる場合があります
+          複数選択可・カード割引が適用できる場合があります
         </p>
         <div className="grid grid-cols-2 gap-2">
-          {CREDIT_CARD_OPTIONS.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => updateField('creditCard', option.value)}
-              className={`p-3 rounded-lg border-2 text-sm tap-target focus-ring ${
-                data.creditCard === option.value
-                  ? 'border-accent bg-accent/5 text-accent'
-                  : 'border-border bg-white text-text-main hover:border-accent/50'
-              }`}
-            >
-              {option.label}
-            </button>
-          ))}
+          {CREDIT_CARD_OPTIONS.map((option) => {
+            const isSelected = data.creditCards.includes(option.value as CreditCardType);
+            return (
+              <button
+                key={option.value}
+                onClick={() => toggleCreditCard(option.value as CreditCardType)}
+                className={`p-3 rounded-lg border-2 text-sm tap-target focus-ring flex items-center justify-center gap-1.5 ${
+                  isSelected
+                    ? 'border-accent bg-accent/5 text-accent'
+                    : 'border-border bg-white text-text-main hover:border-accent/50'
+                }`}
+              >
+                {isSelected && <Check className="w-4 h-4" />}
+                {option.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 

@@ -12,22 +12,45 @@ const CARD_MAPPING: Record<string, string[]> = {
 };
 
 /**
- * ユーザーのカードが対象カードに含まれるかチェック
+ * ユーザーのカードが対象カードに含まれるかチェック（複数カード対応）
  */
-function matchesTargetCard(userCard: string, targetCards: string[]): boolean {
-  if (userCard === 'none' || userCard === 'other') {
-    return false;
-  }
-  if (targetCards.length === 0) {
+function matchesTargetCard(userCards: string[], targetCards: string[]): boolean {
+  if (userCards.length === 0 || targetCards.length === 0) {
     return false;
   }
 
-  const userCardKeywords = CARD_MAPPING[userCard] || [];
-  return targetCards.some((target) =>
-    userCardKeywords.some((keyword) =>
-      target.toLowerCase().includes(keyword.toLowerCase())
-    )
-  );
+  return userCards.some((userCard) => {
+    const userCardKeywords = CARD_MAPPING[userCard] || [];
+    return targetCards.some((target) =>
+      userCardKeywords.some((keyword) =>
+        target.toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
+  });
+}
+
+/**
+ * マッチするカード名を取得
+ */
+function getMatchingCardName(userCards: string[], targetCards: string[]): string | null {
+  for (const userCard of userCards) {
+    const userCardKeywords = CARD_MAPPING[userCard] || [];
+    const matches = targetCards.some((target) =>
+      userCardKeywords.some((keyword) =>
+        target.toLowerCase().includes(keyword.toLowerCase())
+      )
+    );
+    if (matches) {
+      const cardNames: Record<string, string> = {
+        d_card: 'dカード',
+        au_pay: 'au PAYカード',
+        paypay: 'PayPayカード',
+        rakuten: '楽天カード',
+      };
+      return cardNames[userCard] || userCard;
+    }
+  }
+  return null;
 }
 
 /**
@@ -227,21 +250,7 @@ function getDiscountScore(plan: Plan, common: CommonSettings): number {
   // カード割引
   if (plan.cardDiscount.available) {
     const targetCards = plan.cardDiscount.targetCards || [];
-    const cardMap: Record<string, string[]> = {
-      d_card: ['dcard', 'd-card', 'dカード'],
-      au_pay: ['aupay', 'au pay'],
-      paypay: ['paypay'],
-      rakuten: ['rakuten', '楽天'],
-    };
-    const userCardKeywords = cardMap[common.creditCard] || [];
-    const hasMatch =
-      common.creditCard !== 'none' &&
-      common.creditCard !== 'other' &&
-      (targetCards.length === 0 ||
-        targetCards.some((c) =>
-          userCardKeywords.some((k) => c.toLowerCase().includes(k))
-        ));
-    if (hasMatch) {
+    if (matchesTargetCard(common.creditCards, targetCards)) {
       score += 25;
     }
   }
@@ -300,8 +309,7 @@ function calculateMonthlyPrice(
 
   if (plan.cardDiscount.available && plan.cardDiscount.discountAmount) {
     const targetCards = plan.cardDiscount.targetCards || [];
-    const cardMatches = matchesTargetCard(common.creditCard, targetCards);
-    if (cardMatches) {
+    if (matchesTargetCard(common.creditCards, targetCards)) {
       price -= plan.cardDiscount.discountAmount;
     }
   }
@@ -330,9 +338,10 @@ function getAppliedDiscounts(plan: Plan, common: CommonSettings): AppliedDiscoun
 
   if (plan.cardDiscount.available && plan.cardDiscount.discountAmount) {
     const targetCards = plan.cardDiscount.targetCards || [];
-    if (matchesTargetCard(common.creditCard, targetCards)) {
+    const matchingCard = getMatchingCardName(common.creditCards, targetCards);
+    if (matchingCard) {
       discounts.push({
-        name: 'カード割引',
+        name: `${matchingCard}割引`,
         amount: plan.cardDiscount.discountAmount,
       });
     }

@@ -43,14 +43,12 @@ export const HOME_INTERNET_OPTIONS = [
   { value: 'none', label: 'なし / わからない' },
 ] as const;
 
-// クレジットカード選択肢
+// クレジットカード選択肢（複数選択可能）
 export const CREDIT_CARD_OPTIONS = [
   { value: 'd_card', label: 'dカード' },
   { value: 'au_pay', label: 'au PAYカード' },
   { value: 'paypay', label: 'PayPayカード' },
   { value: 'rakuten', label: '楽天カード' },
-  { value: 'other', label: 'その他' },
-  { value: 'none', label: 'なし / 使わない' },
 ] as const;
 
 // 家族人数選択肢（本人含む）
