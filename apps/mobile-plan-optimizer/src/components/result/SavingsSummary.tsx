@@ -1,4 +1,4 @@
-import { TrendingDown, Wallet } from 'lucide-react';
+import { TrendingDown, Wallet, Database, Phone } from 'lucide-react';
 import type { DiagnosisSummary } from '../../types/result';
 
 interface SavingsSummaryProps {
@@ -12,6 +12,12 @@ export function SavingsSummary({ summary }: SavingsSummaryProps) {
 
   const hasSavings =
     summary.estimatedYearlySavings !== null && summary.estimatedYearlySavings > 0;
+
+  const voiceOptionLabel = {
+    none: '通話オプション不要',
+    '5min': '5分かけ放題がおすすめ',
+    unlimited: 'かけ放題がおすすめ',
+  };
 
   return (
     <div className="card">
@@ -28,29 +34,46 @@ export function SavingsSummary({ summary }: SavingsSummaryProps) {
             ¥{formatPrice(summary.estimatedYearlySavings!)}
           </p>
           <p className="text-xs text-text-sub mt-1">
-            現在の月額 ¥{formatPrice(summary.currentTotalMonthlyFee!)} から
+            現在の月額 ¥{formatPrice(summary.currentMonthlyFee!)} から
           </p>
         </div>
       )}
 
       {/* おすすめ月額 */}
-      <div className="text-center">
+      <div className="text-center mb-4">
         <p className="text-sm text-text-sub mb-1">
-          おすすめプランの月額合計
+          おすすめプランの月額
         </p>
         <p className="price-large text-text-main">
-          ¥{formatPrice(summary.recommendedTotalMonthlyFee)}
+          ¥{formatPrice(summary.recommendedMonthlyFee)}
           <span className="price-unit text-text-sub">/月</span>
         </p>
-        {summary.totalPersons > 1 && (
-          <p className="text-xs text-text-sub mt-1">
-            {summary.totalPersons}人分の合計
-          </p>
-        )}
+      </div>
+
+      {/* 診断結果の詳細 */}
+      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-border">
+        <div className="flex items-center gap-2">
+          <Database className="w-4 h-4 text-accent" />
+          <div>
+            <p className="text-xs text-text-sub">推定データ量</p>
+            <p className="text-sm font-semibold text-text-main">
+              {summary.estimatedDataUsage}GB/月
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <Phone className="w-4 h-4 text-accent" />
+          <div>
+            <p className="text-xs text-text-sub">通話オプション</p>
+            <p className="text-sm font-semibold text-text-main">
+              {voiceOptionLabel[summary.recommendedVoiceOption]}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* 現在の料金が不明な場合 */}
-      {!hasSavings && summary.currentTotalMonthlyFee === null && (
+      {!hasSavings && summary.currentMonthlyFee === null && (
         <div className="mt-4 pt-4 border-t border-border text-center">
           <div className="inline-flex items-center gap-2 text-sm text-text-sub">
             <Wallet className="w-4 h-4" />

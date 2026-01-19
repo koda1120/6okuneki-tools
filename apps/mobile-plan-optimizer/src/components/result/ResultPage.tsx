@@ -1,10 +1,9 @@
-import { BarChart3, TrendingDown, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { BarChart3, TrendingDown, RefreshCw, ChevronDown, ChevronUp, Smartphone } from 'lucide-react';
 import { useState } from 'react';
 import type { DiagnosisResult } from '../../types/result';
 import { SavingsSummary } from './SavingsSummary';
 import { SavingsTips } from './SavingsTips';
-import { PersonResultSection } from './PersonResultSection';
-import { FamilyPatternComparison } from './FamilyPatternComparison';
+import { PlanCard } from './PlanCard';
 
 interface ResultPageProps {
   result: DiagnosisResult;
@@ -13,10 +12,15 @@ interface ResultPageProps {
 
 export function ResultPage({ result, onRestart }: ResultPageProps) {
   const [showAllTips, setShowAllTips] = useState(false);
+  const [showAllPlans, setShowAllPlans] = useState(false);
+
+  const displayedPlans = showAllPlans
+    ? result.rankedPlans
+    : result.rankedPlans.slice(0, 3);
 
   return (
     <div className="min-h-screen bg-bg-base pb-24">
-      {/* ヘッダー - シンプル・ミニマル */}
+      {/* ヘッダー */}
       <header className="bg-white border-b border-border py-4 px-4">
         <div className="max-w-lg mx-auto">
           <div className="flex items-center gap-3">
@@ -26,7 +30,7 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
             <div>
               <h1 className="text-lg font-bold text-text-main">診断結果</h1>
               <p className="text-xs text-text-sub">
-                あなたに最適なプランを見つけました
+                157プランから最適なプランを選びました
               </p>
             </div>
           </div>
@@ -79,26 +83,49 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
           </section>
         )}
 
-        {/* 各人の結果 */}
-        <section className="mt-8 space-y-6">
-          {result.personResults.map((personResult) => (
-            <PersonResultSection
-              key={personResult.personIndex}
-              personResult={personResult}
-              totalPersons={result.summary.totalPersons}
-            />
-          ))}
-        </section>
-
-        {/* 家族パターン比較 */}
-        {result.familyPatterns && result.familyPatterns.length > 0 && (
-          <section className="mt-8">
-            <h2 className="font-bold text-text-main mb-3">
-              家族プランの比較
+        {/* おすすめプラン一覧 */}
+        <section className="mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-bold text-text-main flex items-center gap-2">
+              <Smartphone className="w-5 h-5 text-accent" />
+              おすすめプラン
             </h2>
-            <FamilyPatternComparison patterns={result.familyPatterns} />
-          </section>
-        )}
+            <span className="text-sm text-text-sub">
+              {result.rankedPlans.length}件
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {displayedPlans.map((planScore, index) => (
+              <PlanCard
+                key={`${planScore.plan.carrierId}-${planScore.plan.name}`}
+                planScore={planScore}
+                rank={index + 1}
+                isTop={index === 0}
+              />
+            ))}
+          </div>
+
+          {/* もっと見るボタン */}
+          {result.rankedPlans.length > 3 && (
+            <button
+              onClick={() => setShowAllPlans(!showAllPlans)}
+              className="w-full mt-4 h-12 rounded-lg border border-border text-text-main font-medium flex items-center justify-center gap-2 tap-target focus-ring hover:bg-gray-50 transition-colors"
+            >
+              {showAllPlans ? (
+                <>
+                  閉じる
+                  <ChevronUp className="w-5 h-5" />
+                </>
+              ) : (
+                <>
+                  他{result.rankedPlans.length - 3}件を見る
+                  <ChevronDown className="w-5 h-5" />
+                </>
+              )}
+            </button>
+          )}
+        </section>
 
         {/* やり直しボタン */}
         <div className="mt-8 pb-8">

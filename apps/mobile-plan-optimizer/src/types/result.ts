@@ -31,47 +31,20 @@ export interface PlanScore {
   recommendedVoiceOption: 'none' | '5min' | 'unlimited';
 }
 
-// 1人分の診断結果
-export interface PersonResult {
-  personIndex: number;
-  recommendedVoiceOption: 'none' | '5min' | 'unlimited';
-  estimatedDataUsage: number;
-  rankedPlans: PlanScore[];
-}
-
-// 家族パターンの1人分のプラン割り当て
-export interface PersonPlanAssignment {
-  personIndex: number;
-  plan: Plan;
-  monthlyPrice: number;
-}
-
-// 家族パターン比較
-export interface FamilyPattern {
-  type: 'same_carrier' | 'separate';
-  carrierId?: string;
-  totalMonthlyPrice: number;
-  totalYearlyPrice: number;
-  savingsPerYear?: number;
-  personPlans: PersonPlanAssignment[];
-  pros: string[];
-  cons: string[];
-}
-
 // 診断結果サマリー
 export interface DiagnosisSummary {
-  totalPersons: number;
-  currentTotalMonthlyFee: number | null;
-  recommendedTotalMonthlyFee: number;
+  currentMonthlyFee: number | null;
+  recommendedMonthlyFee: number;
   estimatedYearlySavings: number | null;
+  estimatedDataUsage: number;
+  recommendedVoiceOption: 'none' | '5min' | 'unlimited';
 }
 
 // 診断結果全体
 export interface DiagnosisResult {
   summary: DiagnosisSummary;
+  rankedPlans: PlanScore[];
   savingTips: SavingTip[];
-  personResults: PersonResult[];
-  familyPatterns?: FamilyPattern[];
   globalWarnings: string[];
   diagnosedAt: string;
 }

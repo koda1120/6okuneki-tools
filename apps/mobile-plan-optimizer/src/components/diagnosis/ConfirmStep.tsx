@@ -1,7 +1,6 @@
 import { CheckCircle, User, Settings, AlertTriangle } from 'lucide-react';
-import type { PersonDiagnosis, CommonSettings } from '../../types/diagnosis';
+import type { UserUsage, CommonSettings } from '../../types/diagnosis';
 import {
-  RELATIONSHIP_OPTIONS,
   DATA_USAGE_OPTIONS,
   CALL_FREQUENCY_OPTIONS,
   CURRENT_CARRIER_OPTIONS,
@@ -13,20 +12,15 @@ import {
 import { RESULT_DISCLAIMER } from '../../constants/disclaimer';
 
 interface ConfirmStepProps {
-  personCount: number;
-  persons: PersonDiagnosis[];
+  user: UserUsage;
   common: CommonSettings;
   onConfirm: () => void;
 }
 
-export function ConfirmStep({
-  persons,
-  common,
-  onConfirm,
-}: ConfirmStepProps) {
+export function ConfirmStep({ user, common, onConfirm }: ConfirmStepProps) {
   const getLabel = (
-    options: readonly { value: string; label: string }[],
-    value: string | undefined
+    options: readonly { value: string | number; label: string }[],
+    value: string | number | undefined
   ) => {
     const option = options.find((o) => o.value === value);
     return option?.label || '未設定';
@@ -45,50 +39,39 @@ export function ConfirmStep({
         </p>
       </div>
 
-      {/* 各人の情報 */}
-      <div className="space-y-4">
-        {persons.map((person, index) => (
-          <div key={index} className="card">
-            <div className="flex items-center gap-2 mb-3">
-              <User className="w-5 h-5 text-accent" />
-              <h3 className="font-bold text-text-main">
-                {index === 0 ? 'あなた' : `${index + 1}人目`}
-                {index > 0 && person.relationship && (
-                  <span className="font-normal text-text-sub ml-2">
-                    ({getLabel(RELATIONSHIP_OPTIONS, person.relationship)})
-                  </span>
-                )}
-              </h3>
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-text-sub">データ使用量</span>
-                <span className="text-text-main">
-                  {getLabel(DATA_USAGE_OPTIONS, person.dataUsage)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-sub">通話頻度</span>
-                <span className="text-text-main">
-                  {getLabel(CALL_FREQUENCY_OPTIONS, person.callFrequency)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-text-sub">現在のキャリア</span>
-                <span className="text-text-main">
-                  {getLabel(CURRENT_CARRIER_OPTIONS, person.currentCarrier)}
-                </span>
-              </div>
-            </div>
+      {/* あなたの情報 */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-3">
+          <User className="w-5 h-5 text-accent" />
+          <h3 className="font-bold text-text-main">あなたの使い方</h3>
+        </div>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between">
+            <span className="text-text-sub">データ使用量</span>
+            <span className="text-text-main">
+              {getLabel(DATA_USAGE_OPTIONS, user.dataUsage)}
+            </span>
           </div>
-        ))}
+          <div className="flex justify-between">
+            <span className="text-text-sub">通話頻度</span>
+            <span className="text-text-main">
+              {getLabel(CALL_FREQUENCY_OPTIONS, user.callFrequency)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-text-sub">現在のキャリア</span>
+            <span className="text-text-main">
+              {getLabel(CURRENT_CARRIER_OPTIONS, user.currentCarrier)}
+            </span>
+          </div>
+        </div>
       </div>
 
-      {/* 共通設定 */}
+      {/* 割引条件・希望 */}
       <div className="card">
         <div className="flex items-center gap-2 mb-3">
           <Settings className="w-5 h-5 text-accent" />
-          <h3 className="font-bold text-text-main">共通設定</h3>
+          <h3 className="font-bold text-text-main">割引条件・希望</h3>
         </div>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
@@ -101,6 +84,12 @@ export function ConfirmStep({
             <span className="text-text-sub">クレジットカード</span>
             <span className="text-text-main">
               {getLabel(CREDIT_CARD_OPTIONS, common.creditCard)}
+            </span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-text-sub">家族割人数</span>
+            <span className="text-text-main">
+              {common.familyMembers}人
             </span>
           </div>
           <div className="flex justify-between">

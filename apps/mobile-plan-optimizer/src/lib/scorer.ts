@@ -1,5 +1,5 @@
 import type { Plan } from '../types/plan';
-import type { PersonDiagnosis, CommonSettings } from '../types/diagnosis';
+import type { UserUsage, CommonSettings } from '../types/diagnosis';
 import type { PlanScore, ScoreBreakdown } from '../types/result';
 import { estimateDataUsage, recommendVoiceOption } from './filter';
 
@@ -35,15 +35,15 @@ function matchesTargetCard(userCard: string, targetCards: string[]): boolean {
  */
 export function scorePlan(
   plan: Plan,
-  person: PersonDiagnosis,
+  user: UserUsage,
   common: CommonSettings,
   allPlans: Plan[]
 ): PlanScore {
-  const breakdown = calculateBreakdown(plan, person, common, allPlans);
-  const voiceOption = recommendVoiceOption(person);
-  const monthlyPrice = calculateMonthlyPrice(plan, person, common, voiceOption);
+  const breakdown = calculateBreakdown(plan, user, common, allPlans);
+  const voiceOption = recommendVoiceOption(user);
+  const monthlyPrice = calculateMonthlyPrice(plan, user, common, voiceOption);
   const appliedDiscounts = getAppliedDiscounts(plan, common);
-  const warnings = getWarnings(plan, person, common);
+  const warnings = getWarnings(plan, user, common);
 
   // 重み付けスコア計算
   const weights = getWeights(common.priority);
@@ -70,11 +70,11 @@ export function scorePlan(
 
 function calculateBreakdown(
   plan: Plan,
-  person: PersonDiagnosis,
+  user: UserUsage,
   common: CommonSettings,
   allPlans: Plan[]
 ): ScoreBreakdown {
-  const estimatedUsage = estimateDataUsage(person);
+  const estimatedUsage = estimateDataUsage(user);
 
   // 料金スコア（安いほど高スコア）
   const prices = allPlans.map((p) => p.monthlyPrice);
@@ -92,7 +92,7 @@ function calculateBreakdown(
   const dataScore = getDataMatchScore(plan, estimatedUsage);
 
   // 通話オプションスコア
-  const voiceOption = recommendVoiceOption(person);
+  const voiceOption = recommendVoiceOption(user);
   const voiceScore = getVoiceOptionScore(plan, voiceOption);
 
   // 割引スコア
@@ -125,13 +125,12 @@ function getWeights(priority: CommonSettings['priority']) {
   const priorityMap: Record<string, keyof typeof baseWeights> = {
     price: 'price',
     quality: 'quality',
-    data: 'data',
     support: 'support',
-    points: 'discount',
+    balance: 'price', // バランスの場合は変更なし
   };
 
   const priorityKey = priorityMap[priority];
-  if (priorityKey) {
+  if (priorityKey && priority !== 'balance') {
     const boosted = { ...baseWeights };
     boosted[priorityKey] *= 2;
 
@@ -216,7 +215,6 @@ function getDiscountScore(plan: Plan, common: CommonSettings): number {
     const targetServices = plan.homeInternetDiscount.targetServices || [];
     const hasMatch =
       common.homeInternet !== 'none' &&
-      common.homeInternet !== 'unknown' &&
       (targetServices.length === 0 ||
         targetServices.some((s) =>
           s.toLowerCase().includes(common.homeInternet.replace('_', ' '))
@@ -257,11 +255,7 @@ function getSupportScore(plan: Plan, common: CommonSettings): number {
       return plan.shopSupport.available ? 100 : 0;
     case 'shop_preferred':
       return plan.shopSupport.available ? 100 : 60;
-    case 'phone_ok':
-      return plan.remoteSupport.phone?.available ? 100 : 70;
-    case 'chat_ok':
-      return plan.remoteSupport.chat?.available ? 100 : 80;
-    case 'none':
+    case 'online_ok':
       return 100;
     default:
       return 70;
@@ -270,12 +264,12 @@ function getSupportScore(plan: Plan, common: CommonSettings): number {
 
 function calculateMonthlyPrice(
   plan: Plan,
-  person: PersonDiagnosis,
+  user: UserUsage,
   common: CommonSettings,
   voiceOption: 'none' | '5min' | 'unlimited'
 ): number {
   let price = plan.monthlyPrice;
-  const estimatedUsage = estimateDataUsage(person);
+  const estimatedUsage = estimateDataUsage(user);
 
   // 段階制の場合は使用量に応じた料金
   if (plan.dataCapacityType === 'tiered' && plan.priceTiers) {
@@ -299,7 +293,7 @@ function calculateMonthlyPrice(
 
   // 割引適用
   if (plan.homeInternetDiscount.available && plan.homeInternetDiscount.discountAmount) {
-    if (common.homeInternet !== 'none' && common.homeInternet !== 'unknown') {
+    if (common.homeInternet !== 'none') {
       price -= plan.homeInternetDiscount.discountAmount;
     }
   }
@@ -312,6 +306,11 @@ function calculateMonthlyPrice(
     }
   }
 
+  // 家族割引（家族人数に応じて）
+  if (plan.familyDiscount.available && plan.familyDiscount.discountPerLine && common.familyMembers >= 2) {
+    price -= plan.familyDiscount.discountPerLine;
+  }
+
   return Math.max(0, price);
 }
 
@@ -320,8 +319,7 @@ function getAppliedDiscounts(plan: Plan, common: CommonSettings): string[] {
 
   if (
     plan.homeInternetDiscount.available &&
-    common.homeInternet !== 'none' &&
-    common.homeInternet !== 'unknown'
+    common.homeInternet !== 'none'
   ) {
     discounts.push('光回線セット割');
   }
@@ -333,16 +331,20 @@ function getAppliedDiscounts(plan: Plan, common: CommonSettings): string[] {
     }
   }
 
+  if (plan.familyDiscount.available && common.familyMembers >= 2) {
+    discounts.push(`家族割（${common.familyMembers}人）`);
+  }
+
   return discounts;
 }
 
 function getWarnings(
   plan: Plan,
-  person: PersonDiagnosis,
+  user: UserUsage,
   common: CommonSettings
 ): string[] {
   const warnings: string[] = [];
-  const estimatedUsage = estimateDataUsage(person);
+  const estimatedUsage = estimateDataUsage(user);
 
   // データ量不足の警告
   if (plan.dataCapacityGb !== null && plan.dataCapacityGb < estimatedUsage) {

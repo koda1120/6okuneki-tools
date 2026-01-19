@@ -2,9 +2,8 @@ import { useState } from 'react';
 import { ArrowLeft, Smartphone } from 'lucide-react';
 import type { DiagnosisInput } from '../../types/diagnosis';
 import type { DiagnosisResult } from '../../types/result';
-import { PersonCountStep } from './PersonCountStep';
-import { PersonInfoStep } from './PersonInfoStep';
-import { CommonSettingsStep } from './CommonSettingsStep';
+import { UserInfoStep } from './UserInfoStep';
+import { SettingsStep } from './SettingsStep';
 import { ConfirmStep } from './ConfirmStep';
 import { useDiagnosis } from '../../hooks/useDiagnosis';
 import { calculateDiagnosis } from '../../lib/calculator';
@@ -27,19 +26,16 @@ export function DiagnosisWizard({ onComplete }: DiagnosisWizardProps) {
 
   const {
     step,
-    personCount,
-    currentPersonIndex,
-    persons,
+    user,
     common,
     progress,
-    handlePersonCountComplete,
-    handlePersonComplete,
-    handleCommonComplete,
+    handleUserComplete,
+    handleSettingsComplete,
     handleConfirm,
     handleBack,
   } = useDiagnosis({ onComplete: handleDiagnosisComplete });
 
-  const showBackButton = step !== 'person_count';
+  const showBackButton = step !== 'user_info';
 
   return (
     <div className="min-h-screen bg-bg-base">
@@ -76,32 +72,26 @@ export function DiagnosisWizard({ onComplete }: DiagnosisWizardProps) {
         {isCalculating ? (
           <div className="flex flex-col items-center justify-center py-20">
             <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full spinner" />
-            <p className="mt-4 text-text-sub">診断中...</p>
+            <p className="mt-4 text-text-sub">157プランから最適を分析中...</p>
           </div>
         ) : (
           <>
-            {step === 'person_count' && (
-              <PersonCountStep onComplete={handlePersonCountComplete} />
-            )}
-            {step === 'person_info' && (
-              <PersonInfoStep
-                personIndex={currentPersonIndex}
-                totalPersons={personCount}
-                initialData={persons[currentPersonIndex]}
-                onComplete={(data) => handlePersonComplete(currentPersonIndex, data)}
+            {step === 'user_info' && (
+              <UserInfoStep
+                initialData={user}
+                onComplete={handleUserComplete}
               />
             )}
-            {step === 'common_settings' && (
-              <CommonSettingsStep
+            {step === 'settings' && (
+              <SettingsStep
                 initialData={common}
-                onComplete={handleCommonComplete}
+                onComplete={handleSettingsComplete}
               />
             )}
             {step === 'confirm' && (
               <ConfirmStep
-                personCount={personCount}
-                persons={persons}
-                common={common!}
+                user={user}
+                common={common}
                 onConfirm={handleConfirm}
               />
             )}
