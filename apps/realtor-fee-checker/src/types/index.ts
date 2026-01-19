@@ -7,15 +7,18 @@ export type PropertyType =
   | 'other';       // その他
 
 export type AreaType =
-  | 'tokyo_23'     // 東京23区
-  | 'tokyo_other'  // 東京23区外
-  | 'kanagawa'     // 神奈川
-  | 'saitama'      // 埼玉
-  | 'chiba'        // 千葉
-  | 'osaka'        // 大阪
-  | 'nagoya'       // 名古屋
-  | 'fukuoka'      // 福岡
-  | 'other';       // その他
+  | 'hokkaido_tohoku'  // 北海道・東北
+  | 'kanto'            // 関東
+  | 'chubu'            // 中部
+  | 'kinki'            // 近畿
+  | 'chugoku_shikoku'  // 中国・四国
+  | 'kyushu_okinawa';  // 九州・沖縄
+
+export type StationDistance =
+  | 'under_5'    // 5分以内
+  | '5_10'       // 6〜10分
+  | '10_15'      // 11〜15分
+  | 'over_15';   // 16分以上
 
 export type VacancyPeriod =
   | 'unknown'      // わからない
@@ -32,6 +35,7 @@ export interface PropertyInfo {
   // 任意項目（精度向上用）
   propertyType: PropertyType | null;
   area: AreaType | null;
+  stationDistance: StationDistance | null; // 駅徒歩
   buildingAge: number | null;
   vacancyPeriod: VacancyPeriod | null;
   moveInMonth: number | null;             // 入居予定月（1〜12）

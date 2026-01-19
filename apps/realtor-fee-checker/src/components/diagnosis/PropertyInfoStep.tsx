@@ -1,7 +1,7 @@
 import { Card } from '@6okuneki/shared';
 import { ChevronRight } from 'lucide-react';
-import type { PropertyInfo, PropertyType, AreaType } from '../../types';
-import { PROPERTY_TYPE_OPTIONS, AREA_OPTIONS } from '../../constants/config';
+import type { PropertyInfo, PropertyType, AreaType, StationDistance } from '../../types';
+import { PROPERTY_TYPE_OPTIONS, AREA_OPTIONS, STATION_DISTANCE_OPTIONS } from '../../constants/config';
 
 interface PropertyInfoStepProps {
   propertyInfo: PropertyInfo;
@@ -82,7 +82,7 @@ export function PropertyInfoStep({
           </div>
 
           {/* エリア（任意） */}
-          <div>
+          <div className="mb-4">
             <label className="block text-sm font-medium text-text-main mb-2">
               エリア
             </label>
@@ -98,6 +98,30 @@ export function PropertyInfoStep({
             >
               <option value="">選択してください</option>
               {AREA_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* 駅徒歩（任意） */}
+          <div>
+            <label className="block text-sm font-medium text-text-main mb-2">
+              駅徒歩
+            </label>
+            <select
+              value={propertyInfo.stationDistance ?? ''}
+              onChange={(e) =>
+                onUpdate({ stationDistance: (e.target.value || null) as StationDistance | null })
+              }
+              className="w-full h-12 px-4 border border-border rounded-lg text-base
+                       focus:border-accent focus:outline-none bg-white appearance-none
+                       bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%235A6978%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')]
+                       bg-no-repeat bg-[right_12px_center]"
+            >
+              <option value="">選択してください</option>
+              {STATION_DISTANCE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>

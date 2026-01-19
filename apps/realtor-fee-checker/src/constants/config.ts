@@ -23,17 +23,22 @@ export const PROPERTY_TYPE_OPTIONS = [
   { value: 'other', label: 'その他' },
 ] as const;
 
-// エリアオプション
+// エリアオプション（地方ブロック方式）
 export const AREA_OPTIONS = [
-  { value: 'tokyo_23', label: '東京23区' },
-  { value: 'tokyo_other', label: '東京23区外' },
-  { value: 'kanagawa', label: '神奈川' },
-  { value: 'saitama', label: '埼玉' },
-  { value: 'chiba', label: '千葉' },
-  { value: 'osaka', label: '大阪' },
-  { value: 'nagoya', label: '名古屋' },
-  { value: 'fukuoka', label: '福岡' },
-  { value: 'other', label: 'その他' },
+  { value: 'hokkaido_tohoku', label: '北海道・東北' },
+  { value: 'kanto', label: '関東' },
+  { value: 'chubu', label: '中部' },
+  { value: 'kinki', label: '近畿' },
+  { value: 'chugoku_shikoku', label: '中国・四国' },
+  { value: 'kyushu_okinawa', label: '九州・沖縄' },
+] as const;
+
+// 駅徒歩オプション
+export const STATION_DISTANCE_OPTIONS = [
+  { value: 'under_5', label: '5分以内' },
+  { value: '5_10', label: '6〜10分' },
+  { value: '10_15', label: '11〜15分' },
+  { value: 'over_15', label: '16分以上' },
 ] as const;
 
 // 空室期間オプション

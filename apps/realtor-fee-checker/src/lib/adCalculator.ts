@@ -87,28 +87,44 @@ export function calculateAdProbability(info: PropertyInfo): AdProbabilityResult 
     }
   }
 
-  // エリア
+  // エリア（地方ブロック方式）
   if (info.area !== null) {
     const areaScores: Record<string, number> = {
-      'tokyo_23': -5,
-      'tokyo_other': 5,
-      'kanagawa': 5,
-      'saitama': 10,
-      'chiba': 10,
-      'osaka': 0,
-      'nagoya': 5,
-      'fukuoka': 5,
-      'other': 10,
+      'hokkaido_tohoku': 10,   // 北海道・東北
+      'kanto': 0,              // 関東（都市部が多いため中立）
+      'chubu': 5,              // 中部
+      'kinki': 0,              // 近畿（都市部が多いため中立）
+      'chugoku_shikoku': 10,   // 中国・四国
+      'kyushu_okinawa': 5,     // 九州・沖縄
     };
     const score = areaScores[info.area] ?? 0;
     if (score !== 0) {
       factors.push({
         name: 'エリア',
         score,
+        impact: 'positive',
+        description: 'このエリアはADが付きやすい傾向があります'
+      });
+    }
+  }
+
+  // 駅徒歩
+  if (info.stationDistance !== null) {
+    const distanceScores: Record<string, number> = {
+      'under_5': -10,   // 5分以内（人気物件）
+      '5_10': 0,        // 6〜10分（標準）
+      '10_15': 10,      // 11〜15分（やや遠い）
+      'over_15': 15,    // 16分以上（遠い）
+    };
+    const score = distanceScores[info.stationDistance] ?? 0;
+    if (score !== 0) {
+      factors.push({
+        name: '駅徒歩',
+        score,
         impact: score > 0 ? 'positive' : 'negative',
         description: score > 0
-          ? 'このエリアはADが付きやすい傾向があります'
-          : '人気エリアはADが付きにくい傾向がありますが、物件によります'
+          ? '駅から遠い物件はADが付きやすい傾向があります'
+          : '駅近物件は人気が高く、ADが付きにくい傾向があります'
       });
     }
   }

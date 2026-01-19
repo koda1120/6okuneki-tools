@@ -7,6 +7,7 @@ const initialPropertyInfo: PropertyInfo = {
   brokerageFee: null,
   propertyType: null,
   area: null,
+  stationDistance: null,
   buildingAge: null,
   vacancyPeriod: null,
   moveInMonth: null,

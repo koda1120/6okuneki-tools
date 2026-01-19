@@ -14,6 +14,7 @@ function calculateInputCompleteness(info: PropertyInfo): InputCompletenessResult
     brokerageFee: '仲介手数料',
     propertyType: '物件種別',
     area: 'エリア',
+    stationDistance: '駅徒歩',
     buildingAge: '築年数',
     vacancyPeriod: '空室期間',
     moveInMonth: '入居予定月',
@@ -24,6 +25,7 @@ function calculateInputCompleteness(info: PropertyInfo): InputCompletenessResult
   const optionalFields: (keyof PropertyInfo)[] = [
     'propertyType',
     'area',
+    'stationDistance',
     'buildingAge',
     'vacancyPeriod',
     'moveInMonth',
