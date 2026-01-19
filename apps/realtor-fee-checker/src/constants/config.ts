@@ -1,6 +1,6 @@
 export const config = {
-  // LINE公式アカウントURL（後で差し替え）
-  lineOfficialUrl: 'https://line.me/R/ti/p/@xxxxx',
+  // LINE公式アカウントURL
+  lineOfficialUrl: 'https://lin.ee/bJiU5bq',
 
   // 法定上限
   legalMaxRate: 1.1,  // 家賃の1.1ヶ月分（税込）
