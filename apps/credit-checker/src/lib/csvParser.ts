@@ -88,26 +88,17 @@ function detectGenericColumns(fields: string[]): { date: string; description: st
   let descCol: string | null = null;
   let amountCol: string | null = null;
 
-  console.log('[CSV Debug] normalizedFields:', normalizedFields);
-  console.log('[CSV Debug] field hex codes:', normalizedFields.map(f => Array.from(f).map(c => c.charCodeAt(0).toString(16)).join(' ')));
-
   for (const field of normalizedFields) {
-    console.log(`[CSV Debug] checking field: "${field}"`);
     if (!dateCol && datePatterns.some(p => field.includes(p))) {
       dateCol = field;
-      console.log(`[CSV Debug] dateCol matched: "${field}"`);
     }
     if (!descCol && descPatterns.some(p => field.includes(p))) {
       descCol = field;
-      console.log(`[CSV Debug] descCol matched: "${field}"`);
     }
     if (!amountCol && amountPatterns.some(p => field.includes(p))) {
       amountCol = field;
-      console.log(`[CSV Debug] amountCol matched: "${field}"`);
     }
   }
-
-  console.log('[CSV Debug] result:', { dateCol, descCol, amountCol });
 
   if (dateCol && descCol && amountCol) {
     return { date: dateCol, description: descCol, amount: amountCol };

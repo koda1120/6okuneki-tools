@@ -1,8 +1,8 @@
 import { Card } from '@6okuneki/shared';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, FileText } from 'lucide-react';
 import type { AdProbability, ScoreFactor } from '../../types';
 import { meterColors } from '../../constants/colors';
-import { getProbabilityLabel, getProbabilityDescription } from '../../lib/adCalculator';
+import { getProbabilityLabel, getProbabilityDescription, generateExplanation } from '../../lib/adCalculator';
 
 interface AdProbabilityCardProps {
   probability: AdProbability;
@@ -21,6 +21,7 @@ export function AdProbabilityCard({ probability, score, factors }: AdProbability
   const meterColor = getMeterColor(score);
   const label = getProbabilityLabel(probability);
   const description = getProbabilityDescription(probability);
+  const explanation = generateExplanation(probability, factors);
 
   return (
     <Card>
@@ -48,10 +49,23 @@ export function AdProbabilityCard({ probability, score, factors }: AdProbability
 
         <p className="text-sm text-text-main mb-4">{description}</p>
 
-        {/* 判定要因 */}
+        {/* 診断理由（文章形式） */}
+        {factors.length > 0 && (
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            <div className="flex items-center gap-2 mb-2">
+              <FileText className="w-4 h-4 text-accent" />
+              <h4 className="text-sm font-medium text-text-main">診断理由</h4>
+            </div>
+            <div className="text-sm text-text-main leading-relaxed whitespace-pre-line">
+              {explanation}
+            </div>
+          </div>
+        )}
+
+        {/* 判定要因（詳細リスト） */}
         {factors.length > 0 && (
           <div className="border-t border-border pt-4">
-            <h4 className="text-sm font-medium text-text-sub mb-2">判定理由</h4>
+            <h4 className="text-sm font-medium text-text-sub mb-2">判定要因の詳細</h4>
             <ul className="space-y-2">
               {factors.map((factor, index) => (
                 <li key={index} className="flex items-start gap-2 text-sm">

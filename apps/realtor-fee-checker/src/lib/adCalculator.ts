@@ -219,3 +219,106 @@ export function getProbabilityDescription(probability: AdProbability): string {
   };
   return descriptions[probability];
 }
+
+// 診断理由の詳細説明を生成
+export function generateExplanation(
+  probability: AdProbability,
+  factors: ScoreFactor[]
+): string {
+  const positiveFactors = factors.filter(f => f.impact === 'positive');
+  const negativeFactors = factors.filter(f => f.impact === 'negative');
+
+  // 要因の文章パーツを生成
+  const buildFactorSentences = (fs: ScoreFactor[]): string[] => {
+    return fs.map(f => {
+      switch (f.name) {
+        case '築年数':
+          if (f.score >= 15) return '築年数が経過した物件';
+          if (f.score >= 5) return '築10年以上の物件';
+          if (f.score <= -10) return '新築・築浅物件';
+          return '築浅の物件';
+        case '駅徒歩':
+          if (f.score >= 10) return '駅から遠い立地';
+          if (f.score <= -10) return '駅近の好立地';
+          return '駅からやや近い立地';
+        case 'エリア':
+          if (f.score >= 10) return '地方エリア';
+          if (f.score >= 5) return '郊外エリア';
+          return '都市部';
+        case '空室期間':
+          if (f.score >= 15) return '空室期間が長い';
+          if (f.score >= 5) return '空室期間がやや長め';
+          return '空室期間が短い';
+        case '入居時期':
+          if (f.score > 0) return '閑散期（4〜12月）の入居';
+          return '繁忙期（1〜3月）の入居';
+        case '物件種別':
+          if (f.score >= 15) return '戸建て物件';
+          if (f.score >= 10) return 'アパート物件';
+          return '';
+        case 'フリーレント・割引あり':
+          return 'フリーレント・家賃割引の提示あり';
+        default:
+          return '';
+      }
+    }).filter(s => s !== '');
+  };
+
+  const positiveSentences = buildFactorSentences(positiveFactors);
+  const negativeSentences = buildFactorSentences(negativeFactors);
+
+  // 確率レベルに応じた導入文
+  let intro = '';
+  let conclusion = '';
+
+  switch (probability) {
+    case 'very_high':
+      intro = 'この物件は複数の条件から、ADが付いている可能性が非常に高いと判断しました。';
+      conclusion = 'このような物件では、大家さんが不動産会社に広告料（AD）を支払って募集を強化していることがほぼ確実と考えられます。仲介手数料の値下げ交渉を強くおすすめします。';
+      break;
+    case 'high':
+      intro = 'この物件の条件から、ADが付いている可能性が高いと判断しました。';
+      conclusion = 'このような物件では、大家さんが不動産会社に広告料（AD）を支払っているケースが多いです。仲介手数料について相談してみる価値があります。';
+      break;
+    case 'medium':
+      intro = 'この物件の条件から、ADが付いている可能性があります。';
+      conclusion = 'ADの有無は物件によりますが、交渉次第で仲介手数料が下がる可能性があります。';
+      break;
+    case 'low':
+      intro = 'この物件の条件から、ADが付いている可能性は低めです。';
+      conclusion = '人気の条件が揃っているため、ADなしでも入居者が集まりやすい物件です。ただし、交渉自体は可能なので、ダメ元で相談してみても良いでしょう。';
+      break;
+    case 'very_low':
+      intro = 'この物件の条件から、ADが付いている可能性は低いと考えられます。';
+      conclusion = '非常に人気の高い条件の物件のため、ADを設定しなくてもすぐに入居者が決まるタイプです。仲介手数料の交渉は難しいかもしれません。';
+      break;
+  }
+
+  // 中間の説明文を生成
+  let middle = '';
+
+  if (positiveSentences.length > 0 && negativeSentences.length > 0) {
+    // 両方ある場合
+    middle = `「${positiveSentences.join('」「')}」という条件はADが付きやすい要因ですが、「${negativeSentences.join('」「')}」という条件はADが付きにくい要因です。`;
+  } else if (positiveSentences.length > 0) {
+    // ADが付きやすい要因のみ
+    if (positiveSentences.length === 1) {
+      middle = `「${positiveSentences[0]}」という条件から、入居者が集まりにくい傾向があります。`;
+    } else {
+      middle = `「${positiveSentences.join('」「')}」という条件から、一般的に入居者が集まりにくい傾向があります。`;
+    }
+  } else if (negativeSentences.length > 0) {
+    // ADが付きにくい要因のみ
+    if (negativeSentences.length === 1) {
+      middle = `「${negativeSentences[0]}」という条件は非常に人気が高いです。`;
+    } else {
+      middle = `「${negativeSentences.join('」「')}」という条件は非常に人気が高いです。`;
+    }
+  }
+
+  // 文章を組み立て
+  if (middle) {
+    return `${intro}\n\n${middle}\n\n${conclusion}`;
+  }
+  return `${intro}\n\n${conclusion}`;
+}

@@ -64,6 +64,14 @@ export function ConfirmStep({ user, common, onConfirm }: ConfirmStepProps) {
               {getLabel(CURRENT_CARRIER_OPTIONS, user.currentCarrier)}
             </span>
           </div>
+          <div className="flex justify-between">
+            <span className="text-text-sub">現在の月額料金</span>
+            <span className="text-text-main">
+              {user.currentMonthlyFee
+                ? `¥${user.currentMonthlyFee.toLocaleString()}/月`
+                : '未入力'}
+            </span>
+          </div>
         </div>
       </div>
 

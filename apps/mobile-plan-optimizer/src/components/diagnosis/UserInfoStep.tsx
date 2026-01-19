@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Smartphone, Phone, Building2 } from 'lucide-react';
+import { Smartphone, Phone, Building2, Wallet } from 'lucide-react';
 import type { UserUsage } from '../../types/diagnosis';
 import { createEmptyUserUsage } from '../../types/diagnosis';
 import {
@@ -33,7 +33,7 @@ export function UserInfoStep({ initialData, onComplete }: UserInfoStepProps) {
         </div>
         <h2 className="text-lg font-bold text-text-main">あなたの使い方</h2>
         <p className="text-sm text-text-sub mt-1">
-          3つの質問に答えてください
+          4つの質問に答えてください
         </p>
       </div>
 
@@ -115,6 +115,57 @@ export function UserInfoStep({ initialData, onComplete }: UserInfoStepProps) {
               }`}
             >
               {option.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 現在の月額料金 */}
+      <div className="card">
+        <div className="flex items-center gap-2 mb-3">
+          <Wallet className="w-5 h-5 text-accent" />
+          <label className="text-sm font-medium text-text-main">
+            現在の月額料金は？
+          </label>
+        </div>
+        <p className="text-xs text-text-sub mb-3">
+          おおよその金額でOK（100円単位で選択）
+        </p>
+        <div className="mb-4">
+          <div className="text-center mb-3">
+            <span className="text-2xl font-bold text-accent">
+              ¥{(data.currentMonthlyFee || 0).toLocaleString()}
+            </span>
+            <span className="text-sm text-text-sub">/月</span>
+          </div>
+          <input
+            type="range"
+            min="0"
+            max="20000"
+            step="100"
+            value={data.currentMonthlyFee || 0}
+            onChange={(e) => updateField('currentMonthlyFee', Number(e.target.value))}
+            className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-accent"
+          />
+          <div className="flex justify-between text-xs text-text-sub mt-1">
+            <span>¥0</span>
+            <span>¥10,000</span>
+            <span>¥20,000</span>
+          </div>
+        </div>
+        {/* クイック選択ボタン */}
+        <div className="grid grid-cols-4 gap-2">
+          {[3000, 5000, 7000, 10000].map((price) => (
+            <button
+              key={price}
+              onClick={() => updateField('currentMonthlyFee', price)}
+              className={`p-2 rounded-lg border text-xs tap-target focus-ring ${
+                data.currentMonthlyFee === price
+                  ? 'border-accent bg-accent/5 text-accent font-bold'
+                  : 'border-border bg-white text-text-main hover:border-accent/50'
+              }`}
+            >
+              ¥{price.toLocaleString()}
             </button>
           ))}
         </div>
