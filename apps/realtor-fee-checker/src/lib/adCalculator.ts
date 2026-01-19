@@ -10,40 +10,43 @@ export function calculateAdProbability(info: PropertyInfo): AdProbabilityResult 
   const factors: ScoreFactor[] = [];
   let baseScore = 50; // 基準スコア
 
-  // 築年数
+  // 築年数（1年単位）
   if (info.buildingAge !== null) {
-    if (info.buildingAge >= 20) {
+    let score = 0;
+    const age = info.buildingAge;
+    let description = '';
+
+    if (age === 0) {
+      score = -15;
+      description = '新築物件はADが付きにくいです';
+    } else if (age <= 3) {
+      score = -10;
+      description = `築${age}年は築浅で、ADが付きにくい傾向があります`;
+    } else if (age <= 5) {
+      score = -5;
+      description = `築${age}年はまだ築浅で、ADが付きにくい傾向があります`;
+    } else if (age <= 10) {
+      score = 5;
+      description = `築${age}年でADが付いている可能性があります`;
+    } else if (age <= 20) {
+      score = 10;
+      description = `築${age}年でADが付いている可能性が高いです`;
+    } else if (age <= 30) {
+      score = 15;
+      description = `築${age}年以上の物件はAD付きの可能性がかなり高いです`;
+    } else {
+      score = 20;
+      description = '築30年以上の物件はAD付きの可能性が非常に高いです';
+    }
+
+    if (score !== 0) {
       factors.push({
         name: '築年数',
-        score: 20,
-        impact: 'positive',
-        description: '築20年以上の物件はAD付きの可能性が高いです'
-      });
-    } else if (info.buildingAge >= 10) {
-      factors.push({
-        name: '築年数',
-        score: 10,
-        impact: 'positive',
-        description: '築10年以上でADが付いている可能性があります'
-      });
-    } else if (info.buildingAge < 5 && info.buildingAge > 0) {
-      factors.push({
-        name: '築年数',
-        score: -10,
-        impact: 'negative',
-        description: '築浅物件はADが付きにくい傾向があります'
+        score,
+        impact: score > 0 ? 'positive' : 'negative',
+        description
       });
     }
-  }
-
-  // 新築フラグ
-  if (info.isNewConstruction === true) {
-    factors.push({
-      name: '新築',
-      score: -15,
-      impact: 'negative',
-      description: '新築物件はADが付きにくいです'
-    });
   }
 
   // 空室期間
@@ -120,23 +123,33 @@ export function calculateAdProbability(info: PropertyInfo): AdProbabilityResult 
     }
   }
 
-  // 駅徒歩
+  // 駅徒歩（1分単位）
   if (info.stationDistance !== null) {
-    const distanceScores: Record<string, number> = {
-      'under_5': -10,   // 5分以内（人気物件）
-      '5_10': 0,        // 6〜10分（標準）
-      '10_15': 10,      // 11〜15分（やや遠い）
-      'over_15': 15,    // 16分以上（遠い）
-    };
-    const score = distanceScores[info.stationDistance] ?? 0;
+    let score = 0;
+    const distance = info.stationDistance;
+
+    if (distance <= 3) {
+      score = -15;  // 3分以内（超人気）
+    } else if (distance <= 5) {
+      score = -10;  // 4〜5分（人気）
+    } else if (distance <= 7) {
+      score = -5;   // 6〜7分（やや人気）
+    } else if (distance <= 10) {
+      score = 0;    // 8〜10分（標準）
+    } else if (distance <= 15) {
+      score = 10;   // 11〜15分（やや遠い）
+    } else {
+      score = 15;   // 16分以上（遠い）
+    }
+
     if (score !== 0) {
       factors.push({
         name: '駅徒歩',
         score,
         impact: score > 0 ? 'positive' : 'negative',
         description: score > 0
-          ? '駅から遠い物件はADが付きやすい傾向があります'
-          : '駅近物件は人気が高く、ADが付きにくい傾向があります'
+          ? `駅から${distance}分は遠めで、ADが付きやすい傾向があります`
+          : `駅から${distance}分は近く、人気が高いためADが付きにくい傾向があります`
       });
     }
   }

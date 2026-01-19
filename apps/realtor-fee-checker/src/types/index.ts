@@ -22,11 +22,7 @@ export type AreaType =
   // 九州・沖縄
   | 'fukuoka' | 'saga' | 'nagasaki' | 'kumamoto' | 'oita' | 'miyazaki' | 'kagoshima' | 'okinawa';
 
-export type StationDistance =
-  | 'under_5'    // 5分以内
-  | '5_10'       // 6〜10分
-  | '10_15'      // 11〜15分
-  | 'over_15';   // 16分以上
+// 駅徒歩は1〜21（21は20分以上）の数値で管理
 
 export type VacancyPeriod =
   | 'unknown'      // わからない
@@ -43,7 +39,7 @@ export interface PropertyInfo {
   // 任意項目（精度向上用）
   propertyType: PropertyType | null;
   area: AreaType | null;
-  stationDistance: StationDistance | null; // 駅徒歩
+  stationDistance: number | null;           // 駅徒歩（分）
   buildingAge: number | null;
   vacancyPeriod: VacancyPeriod | null;
   moveInMonth: number | null;             // 入居予定月（1〜12）

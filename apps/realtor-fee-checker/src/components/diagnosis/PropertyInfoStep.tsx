@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card } from '@6okuneki/shared';
 import { ChevronRight } from 'lucide-react';
-import type { PropertyInfo, PropertyType, AreaType, StationDistance } from '../../types';
+import type { PropertyInfo, PropertyType, AreaType } from '../../types';
 import { PROPERTY_TYPE_OPTIONS, AREA_OPTIONS, STATION_DISTANCE_OPTIONS } from '../../constants/config';
 
 interface PropertyInfoStepProps {
@@ -164,7 +164,7 @@ export function PropertyInfoStep({
             <select
               value={propertyInfo.stationDistance ?? ''}
               onChange={(e) =>
-                onUpdate({ stationDistance: (e.target.value || null) as StationDistance | null })
+                onUpdate({ stationDistance: e.target.value ? parseInt(e.target.value, 10) : null })
               }
               className={`w-full ${selectClassName}`}
             >

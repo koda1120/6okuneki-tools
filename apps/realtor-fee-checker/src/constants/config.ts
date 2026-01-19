@@ -81,13 +81,14 @@ export const AREA_OPTIONS = [
   { value: 'okinawa', label: '沖縄県' },
 ] as const;
 
-// 駅徒歩オプション
+// 駅徒歩オプション（1分単位）
 export const STATION_DISTANCE_OPTIONS = [
-  { value: 'under_5', label: '5分以内' },
-  { value: '5_10', label: '6〜10分' },
-  { value: '10_15', label: '11〜15分' },
-  { value: 'over_15', label: '16分以上' },
-] as const;
+  ...Array.from({ length: 20 }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1}分`,
+  })),
+  { value: 21, label: '20分以上' },
+];
 
 // 空室期間オプション
 export const VACANCY_PERIOD_OPTIONS = [
@@ -104,15 +105,12 @@ export const MOVE_IN_MONTH_OPTIONS = Array.from({ length: 12 }, (_, i) => ({
   label: `${i + 1}月`,
 }));
 
-// 築年数オプション
+// 築年数オプション（1年単位）
 export const BUILDING_AGE_OPTIONS = [
   { value: 0, label: '新築' },
-  { value: 3, label: '1〜3年' },
-  { value: 5, label: '4〜5年' },
-  { value: 10, label: '6〜10年' },
-  { value: 15, label: '11〜15年' },
-  { value: 20, label: '16〜20年' },
-  { value: 25, label: '21〜25年' },
-  { value: 30, label: '26〜30年' },
-  { value: 35, label: '31年以上' },
-] as const;
+  ...Array.from({ length: 30 }, (_, i) => ({
+    value: i + 1,
+    label: `${i + 1}年`,
+  })),
+  { value: 31, label: '30年以上' },
+];
