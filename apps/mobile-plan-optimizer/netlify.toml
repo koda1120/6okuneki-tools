@@ -1,6 +1,7 @@
 [build]
+  base = "apps/mobile-plan-optimizer"
   publish = "dist"
-  command = "pnpm build"
+  command = "cd ../.. && pnpm install && pnpm --filter mobile-plan-optimizer build"
 
 # SPA用のリダイレクト設定
 [[redirects]]

@@ -2,8 +2,11 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import type { RawTransaction } from '../types';
 
-// PDF.jsのワーカーを設定
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+// PDF.jsのワーカーを設定（v5用）
+pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url
+).toString();
 
 export interface PdfParseResult {
   success: boolean;
