@@ -47,6 +47,57 @@ export function PlanCard({ planScore, rank, isTop }: PlanCardProps) {
     rakuten: '楽天',
   };
 
+  // キャリア公式サイトURL
+  const carrierUrls: Record<string, string> = {
+    linemo: 'https://www.linemo.jp/',
+    ahamo: 'https://ahamo.com/',
+    povo: 'https://povo.jp/',
+    ymobile: 'https://www.ymobile.jp/',
+    uqmobile: 'https://www.uqwimax.jp/mobile/',
+    rakuten: 'https://network.mobile.rakuten.co.jp/',
+    iijmio: 'https://www.iijmio.jp/',
+    mineo: 'https://mineo.jp/',
+    nuro_mobile: 'https://mobile.nuro.jp/',
+    ocn_mobile: 'https://www.ntt.com/personal/services/mobile/one.html',
+    biglobe: 'https://join.biglobe.ne.jp/mobile/',
+    docomo: 'https://www.docomo.ne.jp/',
+    au: 'https://www.au.com/',
+    softbank: 'https://www.softbank.jp/',
+    nihontsushin: 'https://www.nihontsushin.com/',
+    aeon: 'https://aeonmobile.jp/',
+    his: 'https://his-mobile.com/',
+    libmo: 'https://www.libmo.jp/',
+    linksmate: 'https://linksmate.jp/',
+    jcom: 'https://www.jcom.co.jp/service/mobile/',
+    yu_mobile: 'https://www.yumobile.jp/',
+    qtmobile: 'https://www.qtmobile.jp/',
+    nifmo: 'https://nifmo.nifty.com/',
+    rocket_mobile: 'https://rokemoba.com/',
+    yamada_newmobile: 'https://www.yamada-denki.jp/service/mobile/',
+    hi_ho: 'https://hi-ho.jp/course/hihomobile/lte/',
+    asahi_net: 'https://asahi-net.jp/service/mobile/sim/',
+    wirelessgate: 'https://www.wirelessgate.co.jp/sim/',
+    pikara_mobile: 'https://www.pikara.jp/mobile/',
+    eo_mobile: 'https://eonet.jp/mobile/',
+    tokai_mobile: 'https://www.libmo.jp/',
+    bic_sim: 'https://www.iijmio.jp/bicsim/',
+    sumamoba: 'https://smamoba.jp/',
+    fiimo: 'https://www.fiimo.jp/',
+    x_mobile: 'https://www.xmobile.ne.jp/',
+    interlink: 'https://www.interlink.or.jp/service/sim/',
+    tikimo: 'https://tikimo.net/',
+    penguin_mobile: 'https://penguin-mobile.com/',
+    bbiq: 'https://www.bbiq.jp/mobile/',
+    commufa: 'https://www.commufa.jp/mobile/',
+    repair_sim: 'https://www.repair-sim.jp/',
+    at_mobilekun: 'https://www.mobile-kun.jp/',
+    wonderlink: 'https://www.wonderlink.jp/',
+    g_call: 'https://www.g-call.com/sim/',
+    so_net: 'https://www.so-net.ne.jp/access/mobile/',
+  };
+
+  const carrierUrl = carrierUrls[plan.carrierId];
+
   return (
     <div
       className={`card relative ${
@@ -173,10 +224,24 @@ export function PlanCard({ planScore, rank, isTop }: PlanCardProps) {
         )}
 
         {/* 公式サイトリンク */}
-        <button className="w-full h-10 rounded-lg border border-border text-text-main font-medium text-sm flex items-center justify-center gap-1.5 tap-target focus-ring hover:bg-gray-50 transition-colors">
-          公式サイトで詳細を見る
-          <ExternalLink className="w-4 h-4" />
-        </button>
+        {carrierUrl ? (
+          <a
+            href={carrierUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full h-10 rounded-lg border border-border text-text-main font-medium text-sm flex items-center justify-center gap-1.5 tap-target focus-ring hover:bg-gray-50 transition-colors"
+          >
+            公式サイトで詳細を見る
+            <ExternalLink className="w-4 h-4" />
+          </a>
+        ) : (
+          <button
+            disabled
+            className="w-full h-10 rounded-lg border border-border text-text-sub font-medium text-sm flex items-center justify-center gap-1.5 cursor-not-allowed"
+          >
+            公式サイト情報なし
+          </button>
+        )}
       </div>
     </div>
   );
