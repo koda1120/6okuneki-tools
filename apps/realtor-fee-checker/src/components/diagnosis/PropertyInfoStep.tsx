@@ -32,14 +32,15 @@ export function PropertyInfoStep({
   const [manYen, setManYen] = useState<number | null>(null);
   const [senYen, setSenYen] = useState<number | null>(null);
 
-  // 万円・千円が両方選択されたら家賃を計算
+  // 万円・千円から家賃を計算
   useEffect(() => {
-    if (manYen !== null && senYen !== null) {
-      const rent = manYen + senYen * 0.1;
+    if (manYen !== null) {
+      // 万円が選択されていれば計算（千円は未選択なら0扱い）
+      const rent = manYen + (senYen ?? 0) * 0.1;
       onUpdate({ rent });
-    } else if (manYen !== null && senYen === null) {
-      // 万円だけ選択された場合は千円を0として計算
-      onUpdate({ rent: manYen });
+    } else {
+      // 万円が未選択の場合は家賃をnullに
+      onUpdate({ rent: null });
     }
   }, [manYen, senYen, onUpdate]);
 
@@ -94,7 +95,6 @@ export function PropertyInfoStep({
                 value={senYen ?? ''}
                 onChange={handleSenChange}
                 className={`w-20 ${selectClassName}`}
-                disabled={manYen === null}
               >
                 <option value="">--</option>
                 {SEN_OPTIONS.map((option) => (
