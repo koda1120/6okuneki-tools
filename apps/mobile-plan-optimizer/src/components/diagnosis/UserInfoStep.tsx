@@ -46,7 +46,7 @@ export function UserInfoStep({ initialData, onComplete }: UserInfoStepProps) {
           </label>
         </div>
         <p className="text-xs text-text-sub mb-3">
-          わからない場合はスマホの設定から確認できます
+          わからない場合は携帯会社のマイページで確認できます
         </p>
         <div className="grid grid-cols-3 gap-2">
           {DATA_USAGE_OPTIONS.map((option) => (
