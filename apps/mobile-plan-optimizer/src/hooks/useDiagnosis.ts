@@ -24,12 +24,14 @@ export function useDiagnosis({ onComplete }: UseDiagnosisOptions) {
   const handleUserComplete = useCallback((data: UserUsage) => {
     setUser(data);
     setStep('settings');
+    window.scrollTo(0, 0);
   }, []);
 
   // 設定入力完了
   const handleSettingsComplete = useCallback((data: CommonSettings) => {
     setCommon(data);
     setStep('confirm');
+    window.scrollTo(0, 0);
   }, []);
 
   // 診断実行
@@ -47,6 +49,7 @@ export function useDiagnosis({ onComplete }: UseDiagnosisOptions) {
     } else if (step === 'confirm') {
       setStep('settings');
     }
+    window.scrollTo(0, 0);
   }, [step]);
 
   // プログレス計算
