@@ -1,12 +1,14 @@
-// データ使用量
+// データ使用量（プラン容量に合わせた選択肢）
 export type DataUsage =
-  | 'under_1gb'      // 1GB未満
-  | '1_3gb'          // 1〜3GB
-  | '3_10gb'         // 3〜10GB
-  | '10_20gb'        // 10〜20GB
-  | '20_50gb'        // 20〜50GB
-  | 'over_50gb'      // 50GB以上
-  | 'unlimited';     // 無制限がいい
+  | '1gb'
+  | '3gb'
+  | '5gb'
+  | '10gb'
+  | '15gb'
+  | '20gb'
+  | '30gb'
+  | '50gb'
+  | 'unlimited';
 
 // 通話頻度
 export type CallFrequency =
@@ -63,7 +65,7 @@ export interface DiagnosisInput {
 
 // 初期値
 export const createEmptyUserUsage = (): UserUsage => ({
-  dataUsage: 'under_1gb',
+  dataUsage: '3gb',
   callFrequency: 'rarely',
   currentCarrier: 'unknown',
 });

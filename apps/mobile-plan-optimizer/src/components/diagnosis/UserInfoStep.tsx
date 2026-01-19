@@ -45,23 +45,21 @@ export function UserInfoStep({ initialData, onComplete }: UserInfoStepProps) {
             毎月のデータ使用量は？
           </label>
         </div>
-        <div className="space-y-2">
+        <p className="text-xs text-text-sub mb-3">
+          わからない場合はスマホの設定から確認できます
+        </p>
+        <div className="grid grid-cols-3 gap-2">
           {DATA_USAGE_OPTIONS.map((option) => (
             <button
               key={option.value}
               onClick={() => updateField('dataUsage', option.value)}
-              className={`w-full p-3 rounded-lg border-2 text-left tap-target focus-ring ${
+              className={`p-3 rounded-lg border-2 text-center tap-target focus-ring ${
                 data.dataUsage === option.value
-                  ? 'border-accent bg-accent/5 text-accent'
+                  ? 'border-accent bg-accent/5 text-accent font-bold'
                   : 'border-border bg-white text-text-main hover:border-accent/50'
               }`}
             >
-              <span className="font-medium">{option.label}</span>
-              {option.description && (
-                <span className="text-text-sub text-xs ml-2">
-                  {option.description}
-                </span>
-              )}
+              {option.label}
             </button>
           ))}
         </div>

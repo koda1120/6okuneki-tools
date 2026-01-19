@@ -6,12 +6,14 @@ import type { UserUsage, CommonSettings, DataUsage, CallFrequency } from '../typ
  */
 export function estimateDataUsage(user: UserUsage): number {
   const dataUsageMap: Record<DataUsage, number> = {
-    under_1gb: 0.5,
-    '1_3gb': 2,
-    '3_10gb': 6,
-    '10_20gb': 15,
-    '20_50gb': 35,
-    over_50gb: 70,
+    '1gb': 1,
+    '3gb': 3,
+    '5gb': 5,
+    '10gb': 10,
+    '15gb': 15,
+    '20gb': 20,
+    '30gb': 30,
+    '50gb': 50,
     unlimited: 100,
   };
 

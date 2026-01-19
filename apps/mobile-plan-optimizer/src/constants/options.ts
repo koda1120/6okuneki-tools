@@ -1,14 +1,16 @@
 // 診断ウィザードで使用する選択肢の定義
 
-// データ使用量選択肢
+// データ使用量選択肢（プランの容量に合わせた選択肢）
 export const DATA_USAGE_OPTIONS = [
-  { value: 'under_1gb', label: '1GB未満', description: 'Wi-Fi中心でほぼ使わない' },
-  { value: '1_3gb', label: '1〜3GB', description: 'LINEやメールが中心' },
-  { value: '3_10gb', label: '3〜10GB', description: 'SNS・軽い動画視聴' },
-  { value: '10_20gb', label: '10〜20GB', description: '動画をよく見る' },
-  { value: '20_50gb', label: '20〜50GB', description: 'かなり使う' },
-  { value: 'over_50gb', label: '50GB以上', description: 'ヘビーユーザー' },
-  { value: 'unlimited', label: '無制限がいい', description: '容量を気にしたくない' },
+  { value: '1gb', label: '1GB' },
+  { value: '3gb', label: '3GB' },
+  { value: '5gb', label: '5GB' },
+  { value: '10gb', label: '10GB' },
+  { value: '15gb', label: '15GB' },
+  { value: '20gb', label: '20GB' },
+  { value: '30gb', label: '30GB' },
+  { value: '50gb', label: '50GB' },
+  { value: 'unlimited', label: '無制限' },
 ] as const;
 
 // 通話頻度選択肢

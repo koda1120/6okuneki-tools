@@ -7,8 +7,8 @@ import type { SavingTip } from '../types/result';
 export function generateSavingsTips(user: UserUsage): SavingTip[] {
   const tips: SavingTip[] = [];
 
-  // データ使用量が多い場合
-  if (user.dataUsage === 'over_50gb' || user.dataUsage === 'unlimited') {
+  // データ使用量が多い場合（30GB以上）
+  if (user.dataUsage === '30gb' || user.dataUsage === '50gb' || user.dataUsage === 'unlimited') {
     tips.push({
       id: 'heavy_usage',
       title: '大容量・無制限プランがおすすめ',
@@ -17,8 +17,8 @@ export function generateSavingsTips(user: UserUsage): SavingTip[] {
     });
   }
 
-  // データ使用量が少ない場合
-  if (user.dataUsage === 'under_1gb' || user.dataUsage === '1_3gb') {
+  // データ使用量が少ない場合（3GB以下）
+  if (user.dataUsage === '1gb' || user.dataUsage === '3gb') {
     tips.push({
       id: 'light_usage',
       title: '低容量プランで十分かも',
@@ -48,8 +48,8 @@ export function generateSavingsTips(user: UserUsage): SavingTip[] {
     });
   }
 
-  // 中程度のデータ使用
-  if (user.dataUsage === '3_10gb' || user.dataUsage === '10_20gb') {
+  // 中程度のデータ使用（5〜20GB）
+  if (user.dataUsage === '5gb' || user.dataUsage === '10gb' || user.dataUsage === '15gb' || user.dataUsage === '20gb') {
     tips.push({
       id: 'wifi_tip',
       title: 'Wi-Fiを活用しましょう',
