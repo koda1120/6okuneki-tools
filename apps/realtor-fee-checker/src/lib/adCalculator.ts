@@ -87,23 +87,35 @@ export function calculateAdProbability(info: PropertyInfo): AdProbabilityResult 
     }
   }
 
-  // エリア（地方ブロック方式）
+  // エリア（47都道府県）
   if (info.area !== null) {
+    // 都市部: 0, 準都市部: 5, 地方: 10
     const areaScores: Record<string, number> = {
-      'hokkaido_tohoku': 10,   // 北海道・東北
-      'kanto': 0,              // 関東（都市部が多いため中立）
-      'chubu': 5,              // 中部
-      'kinki': 0,              // 近畿（都市部が多いため中立）
-      'chugoku_shikoku': 10,   // 中国・四国
-      'kyushu_okinawa': 5,     // 九州・沖縄
+      // 北海道・東北（地方）
+      'hokkaido': 5, 'aomori': 10, 'iwate': 10, 'miyagi': 5, 'akita': 10, 'yamagata': 10, 'fukushima': 10,
+      // 関東
+      'ibaraki': 10, 'tochigi': 10, 'gunma': 10, 'saitama': 5, 'chiba': 5, 'tokyo': -5, 'kanagawa': 0,
+      // 中部
+      'niigata': 10, 'toyama': 10, 'ishikawa': 10, 'fukui': 10, 'yamanashi': 10, 'nagano': 10,
+      'gifu': 10, 'shizuoka': 5, 'aichi': 0,
+      // 近畿
+      'mie': 10, 'shiga': 10, 'kyoto': 0, 'osaka': -5, 'hyogo': 5, 'nara': 10, 'wakayama': 10,
+      // 中国
+      'tottori': 10, 'shimane': 10, 'okayama': 10, 'hiroshima': 5, 'yamaguchi': 10,
+      // 四国
+      'tokushima': 10, 'kagawa': 10, 'ehime': 10, 'kochi': 10,
+      // 九州・沖縄
+      'fukuoka': 0, 'saga': 10, 'nagasaki': 10, 'kumamoto': 10, 'oita': 10, 'miyazaki': 10, 'kagoshima': 10, 'okinawa': 5,
     };
-    const score = areaScores[info.area] ?? 0;
+    const score = areaScores[info.area] ?? 5;
     if (score !== 0) {
       factors.push({
         name: 'エリア',
         score,
-        impact: 'positive',
-        description: 'このエリアはADが付きやすい傾向があります'
+        impact: score > 0 ? 'positive' : 'negative',
+        description: score > 0
+          ? 'このエリアはADが付きやすい傾向があります'
+          : '都市部は需要が高く、ADが付きにくい傾向があります'
       });
     }
   }

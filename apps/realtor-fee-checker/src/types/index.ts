@@ -7,12 +7,20 @@ export type PropertyType =
   | 'other';       // その他
 
 export type AreaType =
-  | 'hokkaido_tohoku'  // 北海道・東北
-  | 'kanto'            // 関東
-  | 'chubu'            // 中部
-  | 'kinki'            // 近畿
-  | 'chugoku_shikoku'  // 中国・四国
-  | 'kyushu_okinawa';  // 九州・沖縄
+  // 北海道・東北
+  | 'hokkaido' | 'aomori' | 'iwate' | 'miyagi' | 'akita' | 'yamagata' | 'fukushima'
+  // 関東
+  | 'ibaraki' | 'tochigi' | 'gunma' | 'saitama' | 'chiba' | 'tokyo' | 'kanagawa'
+  // 中部
+  | 'niigata' | 'toyama' | 'ishikawa' | 'fukui' | 'yamanashi' | 'nagano' | 'gifu' | 'shizuoka' | 'aichi'
+  // 近畿
+  | 'mie' | 'shiga' | 'kyoto' | 'osaka' | 'hyogo' | 'nara' | 'wakayama'
+  // 中国
+  | 'tottori' | 'shimane' | 'okayama' | 'hiroshima' | 'yamaguchi'
+  // 四国
+  | 'tokushima' | 'kagawa' | 'ehime' | 'kochi'
+  // 九州・沖縄
+  | 'fukuoka' | 'saga' | 'nagasaki' | 'kumamoto' | 'oita' | 'miyazaki' | 'kagoshima' | 'okinawa';
 
 export type StationDistance =
   | 'under_5'    // 5分以内
