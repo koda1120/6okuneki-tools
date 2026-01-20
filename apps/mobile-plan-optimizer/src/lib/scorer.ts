@@ -98,6 +98,7 @@ function calculateBreakdown(
   allPlans: Plan[]
 ): ScoreBreakdown {
   const estimatedUsage = estimateDataUsage(user);
+  const userWantsUnlimited = user.dataUsage === 'unlimited';
 
   // 料金スコア（安いほど高スコア）
   const prices = allPlans.map((p) => p.monthlyPrice);
@@ -112,7 +113,7 @@ function calculateBreakdown(
   const qualityScore = getQualityScore(plan);
 
   // データ量マッチスコア
-  const dataScore = getDataMatchScore(plan, estimatedUsage);
+  const dataScore = getDataMatchScore(plan, estimatedUsage, userWantsUnlimited);
 
   // 通話オプションスコア
   const voiceOption = recommendVoiceOption(user);
@@ -178,17 +179,33 @@ function getQualityScore(plan: Plan): number {
     rakuten: 75,
   };
 
-  const baseScore = networkScores[plan.networkType] || 70;
+  let baseScore = networkScores[plan.networkType] || 70;
+
+  // 速度制限付きプランは品質スコアを大幅に下げる
+  if (plan.dataCapacityType === 'unlimited_speed_limited' || plan.maxSpeed) {
+    const speedPenalty = plan.maxSpeed ? Math.min(40, 50 - plan.maxSpeed * 10) : 40;
+    baseScore -= speedPenalty;
+  }
 
   // 5G対応でボーナス
   const fiveGBonus = plan.has5g ? 5 : 0;
 
-  return Math.min(100, baseScore + fiveGBonus);
+  return Math.max(0, Math.min(100, baseScore + fiveGBonus));
 }
 
-function getDataMatchScore(plan: Plan, estimatedUsage: number): number {
+function getDataMatchScore(plan: Plan, estimatedUsage: number, userWantsUnlimited: boolean): number {
+  // 速度制限付き無制限プランの場合
+  if (plan.dataCapacityType === 'unlimited_speed_limited') {
+    // ユーザーが無制限を希望していない場合は大幅減点
+    if (!userWantsUnlimited) {
+      return 20; // 速度制限があるので低スコア
+    }
+    // 無制限希望でも速度制限があることを考慮
+    return 70;
+  }
+
   if (plan.dataCapacityGb === null) {
-    // 無制限プラン
+    // 高速無制限プラン
     return estimatedUsage > 20 ? 100 : 80;
   }
 
@@ -364,6 +381,12 @@ function getWarnings(
 ): string[] {
   const warnings: string[] = [];
   const estimatedUsage = estimateDataUsage(user);
+
+  // 速度制限付きプランの警告
+  if (plan.dataCapacityType === 'unlimited_speed_limited') {
+    const speedLimit = plan.maxSpeed ? `${plan.maxSpeed}Mbps` : '低速';
+    warnings.push(`常時${speedLimit}の速度制限があります`);
+  }
 
   // データ量不足の警告
   if (plan.dataCapacityGb !== null && plan.dataCapacityGb < estimatedUsage) {

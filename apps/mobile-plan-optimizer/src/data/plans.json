@@ -2341,7 +2341,7 @@
       "carrierId": "mineo",
       "name": "マイそく スタンダード",
       "dataCapacityGb": null,
-      "dataCapacityType": "unlimited",
+      "dataCapacityType": "unlimited_speed_limited",
       "monthlyPrice": 990,
       "voiceBaseRate": 22,
       "voiceFreeMinutes": 0,
@@ -2351,7 +2351,7 @@
       ],
       "networkType": "docomo",
       "has5g": true,
-      "speedLimitAfterCap": "1.5Mbps",
+      "maxSpeed": 1.5,
       "tetheringAvailable": true,
       "overseasRoaming": true,
       "familyDiscount": { "available": true, "discountPerLine": 55, "maxLines": 5 },
@@ -2360,9 +2360,9 @@
       "shopSupport": { "available": true, "shopCount": 200 },
       "remoteSupport": { "phone": { "available": true }, "chat": { "available": true } },
       "mnpOut": { "instant": true, "methods": ["web"] },
-      "features": ["データ無制限", "最大1.5Mbps", "昼12-13時は32kbps"],
-      "cautions": ["昼12-13時は速度制限", "3日10GB制限あり"],
-      "updatedAt": "2026-01-19"
+      "features": ["データ無制限（速度制限あり）", "最大1.5Mbps", "昼12-13時は32kbps"],
+      "cautions": ["常時1.5Mbps速度制限", "昼12-13時は32kbps制限", "3日10GB制限あり"],
+      "updatedAt": "2026-01-20"
     },
     {
       "id": "nuro_mobile_vm",

@@ -73,21 +73,37 @@ function detectFormat(fields: string[]): CsvFormat | null {
   return null;
 }
 
-// 汎用的なカラム検出（自動検出失敗時のフォールバック）
-function detectGenericColumns(fields: string[]): { date: string; description: string; amount: string } | null {
+// 汎用的なカラム検出（3段階のフォールバック）
+function detectGenericColumns(
+  fields: string[],
+  sampleData?: Record<string, string>[]
+): { date: string; description: string; amount: string } | null {
   const normalizedFields = fields.map(f => f.trim());
 
-  // 日付カラムの候補
-  const datePatterns = ['日付', '利用日', 'ご利用日', '日時', 'Date', 'DATE'];
-  // 説明カラムの候補
-  const descPatterns = ['店名', '利用店名', 'ご利用先', '利用先', '摘要', '利用店名・商品名', '説明', 'Description', 'DESCRIPTION'];
-  // 金額カラムの候補
-  const amountPatterns = ['金額', '利用金額', 'ご利用金額', 'Amount', 'AMOUNT'];
+  // === Level 1: 厳密パターンマッチング ===
+  // 日付カラムの候補（優先度順）
+  const datePatterns = [
+    '利用日', 'ご利用日', '日付', '日時', '取引日', '決済日', 'お支払日', '購入日',
+    'Date', 'DATE', 'date', 'Transaction Date', 'Purchase Date'
+  ];
+  // 説明カラムの候補（優先度順）
+  const descPatterns = [
+    '利用店名', '利用店舗', 'ご利用先', '利用先', '店名', '店舗名', '店舗',
+    '加盟店名', '加盟店', 'ご利用店', 'ご利用店名', '利用店名・商品名',
+    '摘要', '内容', '利用内容', '明細', '商品名', '説明', 'お支払先',
+    'Description', 'DESCRIPTION', 'Merchant', 'MERCHANT', 'Store', 'STORE'
+  ];
+  // 金額カラムの候補（優先度順）
+  const amountPatterns = [
+    '利用金額', 'ご利用金額', '金額', '支払金額', 'お支払金額', '利用額', '請求金額',
+    'Amount', 'AMOUNT', 'amount', 'Price', 'PRICE'
+  ];
 
   let dateCol: string | null = null;
   let descCol: string | null = null;
   let amountCol: string | null = null;
 
+  // Level 1: 厳密マッチング（パターンがフィールドに含まれる）
   for (const field of normalizedFields) {
     if (!dateCol && datePatterns.some(p => field.includes(p))) {
       dateCol = field;
@@ -100,11 +116,103 @@ function detectGenericColumns(fields: string[]): { date: string; description: st
     }
   }
 
+  // Level 1で全て見つかったら返す
+  if (dateCol && descCol && amountCol) {
+    return { date: dateCol, description: descCol, amount: amountCol };
+  }
+
+  // === Level 2: 緩いキーワードマッチング ===
+  // 日付を示すキーワード
+  const looseDateKeywords = ['日', 'date', 'Date', 'DATE'];
+  // 説明を示すキーワード（"日"や"金"を含まないもの）
+  const looseDescKeywords = ['店', '先', '内容', '明細', '摘要', '商品', 'merchant', 'store', 'description'];
+  // 金額を示すキーワード
+  const looseAmountKeywords = ['金額', '額', '円', 'amount', 'price', 'Amount', 'Price'];
+
+  for (const field of normalizedFields) {
+    const lowerField = field.toLowerCase();
+
+    // 日付カラム（未検出の場合のみ）
+    if (!dateCol && looseDateKeywords.some(k => field.includes(k) || lowerField.includes(k.toLowerCase()))) {
+      // "金額"に含まれる"日"を除外
+      if (!looseAmountKeywords.some(k => field.includes(k))) {
+        dateCol = field;
+      }
+    }
+
+    // 説明カラム（未検出の場合のみ）
+    if (!descCol && looseDescKeywords.some(k => field.includes(k) || lowerField.includes(k.toLowerCase()))) {
+      // 日付や金額カラムと重複しないようにする
+      if (field !== dateCol && !looseAmountKeywords.some(k => field.includes(k))) {
+        descCol = field;
+      }
+    }
+
+    // 金額カラム（未検出の場合のみ）
+    if (!amountCol && looseAmountKeywords.some(k => field.includes(k) || lowerField.includes(k.toLowerCase()))) {
+      amountCol = field;
+    }
+  }
+
+  // Level 2で全て見つかったら返す
+  if (dateCol && descCol && amountCol) {
+    return { date: dateCol, description: descCol, amount: amountCol };
+  }
+
+  // === Level 3: データ推論（サンプルデータがある場合） ===
+  if (sampleData && sampleData.length > 0) {
+    const sample = sampleData[0];
+
+    for (const field of normalizedFields) {
+      const value = sample[field] || '';
+
+      // 日付カラムの推論（日付形式にマッチするか）
+      if (!dateCol && isDateLike(value)) {
+        dateCol = field;
+      }
+
+      // 金額カラムの推論（数値形式にマッチするか）
+      if (!amountCol && field !== dateCol && isAmountLike(value)) {
+        amountCol = field;
+      }
+    }
+
+    // 残ったカラムを説明として使用
+    if (!descCol) {
+      for (const field of normalizedFields) {
+        if (field !== dateCol && field !== amountCol) {
+          descCol = field;
+          break;
+        }
+      }
+    }
+  }
+
   if (dateCol && descCol && amountCol) {
     return { date: dateCol, description: descCol, amount: amountCol };
   }
 
   return null;
+}
+
+// 日付らしい値かどうか判定
+function isDateLike(value: string): boolean {
+  if (!value) return false;
+  // 様々な日付形式をチェック
+  const datePatterns = [
+    /^\d{4}[\/\-]\d{1,2}[\/\-]\d{1,2}$/,  // 2024/01/15, 2024-01-15
+    /^\d{1,2}[\/\-]\d{1,2}[\/\-]\d{4}$/,  // 01/15/2024
+    /^\d{4}年\d{1,2}月\d{1,2}日?$/,        // 2024年1月15日
+  ];
+  return datePatterns.some(p => p.test(value.trim()));
+}
+
+// 金額らしい値かどうか判定
+function isAmountLike(value: string): boolean {
+  if (!value) return false;
+  // 数値、カンマ区切り、円マーク、¥などを含む
+  const cleaned = value.replace(/[,，円¥\s]/g, '');
+  return /^-?\d+$/.test(cleaned);
 }
 
 // 特定のエンコーディングでCSVをパースする内部関数
@@ -130,8 +238,9 @@ function parseWithEncoding(
           if (format) {
             columns = format.columns;
           } else {
-            // 汎用検出を試行
-            columns = detectGenericColumns(fields);
+            // 汎用検出を試行（サンプルデータも渡す）
+            const sampleData = results.data as Record<string, string>[];
+            columns = detectGenericColumns(fields, sampleData);
           }
         } else {
           format = csvFormats.formats.find(f => f.id === formatId) || null;

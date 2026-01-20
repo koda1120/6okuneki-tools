@@ -496,7 +496,7 @@
     {"name": "T・ジョイ", "category": "entertainment", "aliases": ["T-JOY", "TJOY"], "country": "jp"},
     {"name": "コロナワールド", "category": "entertainment", "aliases": ["CORONA WORLD", "コロナシネマ"], "country": "jp"},
 
-    {"name": "ラウンドワン", "category": "entertainment", "aliases": ["ROUND1", "ROUNDONE", "ラウワン"], "country": "jp"},
+    {"name": "ラウンドワン", "category": "entertainment", "aliases": ["ROUND1", "ROUNDONE", "ラウワン", "スポッチャ", "SPORTSCHA", "SPO-CHA"], "country": "jp"},
     {"name": "カラオケ館", "category": "entertainment", "aliases": ["KARAOKE KAN"], "country": "jp"},
     {"name": "ビッグエコー", "category": "entertainment", "aliases": ["BIG ECHO"], "country": "jp"},
     {"name": "まねきねこ", "category": "entertainment", "aliases": ["MANEKINEKO", "招き猫"], "country": "jp"},

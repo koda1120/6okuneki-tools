@@ -10,9 +10,10 @@ export type NetworkType = 'docomo' | 'au' | 'softbank' | 'rakuten';
 
 // データ容量タイプ
 export type DataCapacityType =
-  | 'fixed'         // 固定容量
-  | 'tiered'        // 段階制
-  | 'unlimited';    // 使い放題
+  | 'fixed'                    // 固定容量
+  | 'tiered'                   // 段階制
+  | 'unlimited'                // 使い放題（高速）
+  | 'unlimited_speed_limited'; // 使い放題（速度制限あり）
 
 // 通話オプション
 export interface VoiceOption {
@@ -82,7 +83,8 @@ export interface Plan {
   // ネットワーク
   networkType: NetworkType;
   has5g: boolean;
-  speedLimitAfterCap?: string;
+  maxSpeed?: number | null;      // 常時の最大速度（Mbps）、nullまたは未定義は制限なし
+  speedLimitAfterCap?: string;   // 容量超過後の速度制限
   tetheringAvailable: boolean;
   overseasRoaming: boolean;
 

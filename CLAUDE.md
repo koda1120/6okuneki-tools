@@ -151,14 +151,17 @@ pnpm -r lint
 | 2026-01-16 | 不動産仲介手数料チェッカー実装完了・Vercelデプロイ |
 | 2026-01-19 | 携帯プラン最適化ツール デザイン刷新（テック・比較・スマート） |
 | 2026-01-19 | 携帯プラン最適化ツール プランデータ拡充完了（20→157プラン、50キャリア） |
+| 2026-01-20 | 不動産仲介手数料チェッカー UX改善・診断理由機能追加 |
 
 ---
 
 ## 次回やること
 
 ### 不動産仲介手数料チェッカー
-- [ ] LINE公式アカウントURLの差し替え（`src/constants/config.ts` の `lineOfficialUrl`）
-- [ ] 本番サイトでの動作確認（フォームが正しく表示・動作するか）
+- [x] LINE公式アカウントURLの差し替え → 完了（`https://lin.ee/bJiU5bq`）
+- [ ] 診断理由テキストの文言チューニング（様々なケースでテストして改善）
+- [ ] モバイルでの表示確認・レスポンシブ調整
+- [ ] 各スコアパターンでの診断理由表示テスト
 
 ### クレカ明細チェッカー
 - [ ] テストCSVで動作確認（https://credit-checker.pages.dev）
@@ -181,8 +184,10 @@ pnpm -r lint
 | ホスティング | Vercel |
 | Project Name | `6niki-fudosan-chukai-checker` |
 | URL | https://6niki-fudosan-chukai-checker.vercel.app/ |
-| Root Directory | `apps/realtor-fee-checker` |
-| Build Command | `cd ../.. && pnpm install && pnpm --filter realtor-fee-checker build` |
+| Root Directory | **空欄**（モノレポのルート） |
+| Build Command | `pnpm --filter realtor-fee-checker build` |
+| Output Directory | `apps/realtor-fee-checker/dist` |
+| Install Command | `pnpm install` |
 
 ### 設計方針
 
@@ -196,7 +201,40 @@ pnpm -r lint
 
 3. **LINE誘導** - 結果画面で交渉の難しさを説明し、LINE相談へ誘導
 
-### 解決した問題
+4. **診断理由の表示**（2026-01-20追加）
+   - パターン3（文章まとめ形式）を採用
+   - 確率レベル（very_high〜very_low）に応じた導入文・結論文
+   - 要因（築年数、駅徒歩、エリア等）を自然な文章に変換
+   - `src/lib/adCalculator.ts` の `generateExplanation()` 関数で生成
+
+5. **結果画面の表示順序**（2026-01-20決定）
+   ```
+   1. ゲージメーター（AD可能性スコア）
+   2. 手数料分析（節約可能額）← ユーザーが最も知りたい情報を上に
+   3. 診断理由
+   4. 診断からのアドバイス
+   5. 交渉について
+   6. AD（広告料）とは
+   ```
+
+6. **入力UIの改善**（2026-01-20）
+   - 家賃入力: デュアルドロップダウン `[X] 万 [Y] 千円` 形式
+   - 駅徒歩: 1分単位（1〜21、21は「20分以上」）
+   - 築年数: 1年単位（新築〜30年以上）
+   - 都道府県: 47都道府県から選択（全国対応）
+   - 仲介手数料: 月数選択（0.5/1/1.1ヶ月分 or その他）
+
+### 解決した問題（2026-01-20追加）
+
+| 問題 | 原因 | 解決方法 |
+|------|------|---------|
+| Chromeでドロップダウンがスクロールできない | `appearance-none` CSSがネイティブスクロールを阻害 | 全selectから`appearance-none`を削除 |
+| 千円ドロップダウンがクリックできない | `disabled={manYen === null}` の制約 | disabled制約を削除、どちらからでも選択可能に |
+| 診断理由が表示されない | 未使用の`AdProbabilityCard`を修正していた | 実際に使用されている`ResultPage`に追加 |
+| Vercel自動デプロイが失敗 | Root Directoryが`apps/realtor-fee-checker`で、shared packageが見つからない | Root Directoryを空欄に変更し、Build Commandで`--filter`指定 |
+| ビルド時間が0ms（キャッシュ問題） | Vercelがビルドをスキップしていた | `vercel --prod --force` でキャッシュクリア |
+
+### 解決した問題（初期）
 
 | 問題 | 原因 | 解決方法 |
 |------|------|---------|
