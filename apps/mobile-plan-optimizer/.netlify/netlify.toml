@@ -9,9 +9,9 @@ plugins = []
 [build]
 publish = "/mnt/c/Users/music006/業務/プロジェクト/6億ニキツール/apps/mobile-plan-optimizer/dist"
 publishOrigin = "config"
-commandOrigin = "config"
+commandOrigin = "ui"
 base = "/mnt/c/Users/music006/業務/プロジェクト/6億ニキツール/apps/mobile-plan-optimizer"
-command = "cd ../.. && pnpm install && pnpm --filter mobile-plan-optimizer build"
+command = "pnpm --filter mobile-plan-optimizer... run build"
 
 [build.environment]
 

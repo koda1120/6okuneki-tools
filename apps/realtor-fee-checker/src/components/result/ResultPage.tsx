@@ -6,6 +6,7 @@ import { NegotiationTips } from './NegotiationTips';
 import { NegotiationDifficultyCard } from './NegotiationDifficultyCard';
 import { AdExplanation } from './AdExplanation';
 import { config } from '../../constants/config';
+import { generateExplanation } from '../../lib/adCalculator';
 
 interface ResultPageProps {
   result: DiagnosisResult;
@@ -18,6 +19,9 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
     month: 'long',
     day: 'numeric',
   });
+
+  // 診断理由の説明文を生成
+  const explanation = generateExplanation(result.adProbability, result.adProbabilityFactors);
 
   return (
     <div className="min-h-screen bg-bg-base pb-24">
@@ -47,6 +51,18 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
               probability={result.adProbability}
             />
           </div>
+
+          {/* 診断理由 */}
+          {result.adProbabilityFactors.length > 0 && (
+            <div className="px-5 pb-5">
+              <div className="bg-gray-50 rounded-lg p-4">
+                <h3 className="text-sm font-bold text-text-main mb-2">診断理由</h3>
+                <p className="text-sm text-text-main leading-relaxed whitespace-pre-line">
+                  {explanation}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* セクション: 手数料分析 */}
