@@ -51,21 +51,9 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
               probability={result.adProbability}
             />
           </div>
-
-          {/* 診断理由 */}
-          {result.adProbabilityFactors.length > 0 && (
-            <div className="px-5 pb-5">
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="text-sm font-bold text-text-main mb-2">診断理由</h3>
-                <p className="text-sm text-text-main leading-relaxed whitespace-pre-line">
-                  {explanation}
-                </p>
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* セクション: 手数料分析 */}
+        {/* セクション: 手数料分析（節約可能額） */}
         <div className="mb-6">
           <h2 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
             <span className="w-1 h-4 bg-accent rounded-full"></span>
@@ -78,6 +66,21 @@ export function ResultPage({ result, onRestart }: ResultPageProps) {
             isOvercharged={result.isOvercharged}
           />
         </div>
+
+        {/* セクション: 診断理由 */}
+        {result.adProbabilityFactors.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-sm font-bold text-text-main mb-3 flex items-center gap-2">
+              <span className="w-1 h-4 bg-accent rounded-full"></span>
+              診断理由
+            </h2>
+            <div className="bg-white border border-border rounded-card shadow-card p-5">
+              <p className="text-sm text-text-main leading-relaxed whitespace-pre-line">
+                {explanation}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* セクション: アドバイス */}
         {result.tips.length > 0 && (
